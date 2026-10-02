@@ -1,0 +1,9 @@
+{
+  "name": "barrydobson-skills",
+  "description": "Barry Dobson's agent skills",
+  "author": {
+    "name": "barrydobson",
+    "url": "https://github.com/barrydobson/skills"
+  },
+  "keywords": ["engineering", "skills", "productivity"]
+}

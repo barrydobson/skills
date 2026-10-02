@@ -1,0 +1,19 @@
+{
+  "name": "barrydobson",
+  "owner": {
+    "name": "Barry Dobson",
+    "url": "https://github.com/barrydobson/skills"
+  },
+  "metadata": {
+    "description": "Barry Dobson's skills"
+  },
+  "plugins": [
+    {
+      "name": "barrydobson-skills",
+      "description": "Barry Dobson's agent skills",
+      "source": "./",
+      "category": "engineering",
+      "keywords": ["engineering", "skills"]
+    }
+  ]
+}

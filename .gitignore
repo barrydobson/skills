@@ -1,0 +1,40 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+.uv/
+uv.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Local plugin cache (but track commands)
+.claude/*
+!.claude/skills/
+
+# MCP server config (contains API keys)
+.mcp.json
+
+.env
+.ruff_cache/
+node_modules/
+scripts/
