@@ -27,7 +27,7 @@ dist/
 build/
 *.egg-info/
 
-# Local plugin cache (but track commands)
+# Local plugin cache (but track project skills)
 .claude/*
 !.claude/skills/
 
@@ -37,4 +37,4 @@ build/
 .env
 .ruff_cache/
 node_modules/
-scripts/
+/scripts/

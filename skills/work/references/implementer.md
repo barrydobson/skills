@@ -12,7 +12,7 @@ Agent (general-purpose):
 
     ## The ticket
 
-    <the contents of ${TMPDIR:-/tmp}/work/<id>.md, pasted verbatim>
+    <the contents of ${TMPDIR:-/tmp}/work/<repo>/<id>.md, pasted verbatim>
 
     The agent brief, where there is one, is the contract. The answers at the
     end were given by the human before the run started.
@@ -31,8 +31,9 @@ Agent (general-purpose):
        patterns this codebase already uses. Create and edit files with the
        Write and Edit tools; the shell is for running commands.
     3. Run the focused tests while you iterate. At the end run the repo's
-       full suite and linters with output redirected to a file, and read only
-       the tail and any failure lines.
+       full suite and linters with output redirected to
+       ${TMPDIR:-/tmp}/work/<repo>/<id>-suite.log, never a file inside the
+       worktree, and read only the tail and any failure lines.
     4. `git add -A` (new files are untracked until you do) and commit with a
        conventional-commit message that names <key>.
     5. Read your own diff once with fresh eyes against the acceptance criteria,

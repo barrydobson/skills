@@ -1,6 +1,6 @@
 # Barry Dobson's Skills
 
-A private Claude Code plugin, `barrydobson-skills`, published from its own single-plugin marketplace, `barrydobson`.
+A personal Claude Code plugin, `barrydobson-skills`, published from its own single-plugin marketplace, `barrydobson`.
 
 ## Installation
 
@@ -24,7 +24,28 @@ Add the repository as a marketplace from its local path:
 | [work](skills/work/) | `/work` takes ready-for-agent tickets to PRs unattended. |
 | [finish](skills/finish/) | `/finish` verifies merged work and moves tickets to Done. |
 
-They need the `tote-issue-tracker` plugin (which provides the `tracker` CLI) and `mattpocock-skills`. Run `/tote-issue-tracker:setup` once per repo. After a tote-issue-tracker update, restart sessions: `/reload-plugins` doesn't refresh a plugin's `bin/` on PATH.
+They need `mattpocock-skills`, which installs as a dependency, and a `tracker` CLI on `PATH`, which you supply.
+
+### The `tracker` CLI
+
+Both skills read and write tickets only through `tracker`. Any CLI with this interface works. I use `tote-issue-tracker`, which supports Jira and GitHub Issues.
+
+Every command prints JSON on stdout. On failure it exits 1 and prints `{"error": "..."}`.
+
+| Command | Used by | Does |
+|---|---|---|
+| `tracker view <key>` | both | Prints the ticket: `summary`, `status`, `issueType`, `descriptionText`, `comments[]` (`text`), and `links[]` (`relation`, `key`, `status`) |
+| `tracker children <parent> [--ready] [--repo <component>]` | `/work` | Lists child tickets, optionally only ready ones for one component |
+| `tracker ready [--repo <component>]` | `/work` | Lists every ready-for-agent ticket |
+| `tracker start <key>` | `/work` | Moves the ticket to in progress and assigns it to you |
+| `tracker review <key>` | `/work` | Moves the ticket to in review |
+| `tracker needs-info <key>` | `/work` | Moves the ticket back to needs-info |
+| `tracker done <key>` | `/finish` | Moves the ticket to done |
+| `tracker comment <key> --body-file <md>` | both | Adds a Markdown comment |
+
+A link's `relation` is `is blocked by` or `blocks`. Each repo's config, including its `component` and the status each command maps to, lives in the frontmatter of `docs/agents/issue-tracker.md`.
+
+With `tote-issue-tracker`, run `/tote-issue-tracker:setup` once per repo. After you update it, restart your sessions, because `/reload-plugins` doesn't refresh a plugin's `bin/` on `PATH`.
 
 Which skills to use for which job:
 

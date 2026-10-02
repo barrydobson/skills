@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A private Claude Code plugin, `barrydobson-skills`, in the repo `barrydobson/skills`. The repo root is both the plugin and a single-plugin marketplace (`barrydobson`) whose entry has `source: "./"`. It holds `/work` and `/finish`. The job-to-commands table is in README.md.
+A personal Claude Code plugin, public on GitHub, `barrydobson-skills`, in the repo `barrydobson/skills`. The repo root is both the plugin and a single-plugin marketplace (`barrydobson`) whose entry has `source: "./"`. It holds `/work` and `/finish`. The job-to-commands table is in README.md.
 
 ## Project Structure
 
@@ -19,7 +19,7 @@ skills/<skill-name>/    # One directory per skill:
 ```
 
 A doc two skills both depend on goes in a root `shared/` directory, reached as
-`{baseDir}/../../shared/<file>.md`. Prefer this over a new skill: a shared
+`${CLAUDE_PLUGIN_ROOT}/shared/<file>.md`. Prefer this over a new skill: a shared
 spine is an include, not a capability, and a skill would sit in every session's
 skill listing and be liable to trigger on its own.
 
@@ -56,7 +56,7 @@ Pre-commit hooks handle linting. Hooks configured:
 ## Key Conventions
 
 - No versions anywhere. Resolution is `plugin.json` → marketplace plugin entry → git SHA, and both are left without a version. `marketplace.json` `metadata` holds the description only
-- Skills reference `{baseDir}` in SKILL.md to point to their own directory at runtime
+- Skills reference `${CLAUDE_SKILL_DIR}` in SKILL.md to point to their own directory at runtime
 - The `.claude/` directory is gitignored (local plugin cache), except `.claude/skills/`
 - `.mcp.json` is gitignored (may contain API keys)
 

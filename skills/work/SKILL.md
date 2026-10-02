@@ -50,10 +50,11 @@ For each workable ticket:
 ```sh
 tracker start <key>
 git fetch origin
-git worktree add .claude/worktrees/<id> -b <id>-<short-slug> origin/HEAD
+base=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
+git worktree add .claude/worktrees/<id> -b <id>-<short-slug> "origin/$base"
 ```
 
-`<id>` is the lowercase Jira key (`pi-123`), or `gh-<n>` for a GitHub issue. Record the base SHA. Write the ticket to `${TMPDIR:-/tmp}/work/<id>.md`: the summary, `descriptionText`, the agent brief, and the answers from step 2.
+`<id>` is the lowercase Jira key (`pi-123`), or `gh-<n>` for a GitHub issue. If `.claude/worktrees/<id>` already exists from an earlier run, reuse it instead of adding it, and record its HEAD as the base SHA. Otherwise record the base SHA of the new worktree. Write the ticket to `${TMPDIR:-/tmp}/work/<repo>/<id>.md`, where `<repo>` is the repo's directory name: the summary, `descriptionText`, the agent brief, and the answers from step 2.
 
 Then dispatch one implementer per ticket with [references/implementer.md](references/implementer.md). Model: `sonnet`, or `opus` when the brief or a comment asks for it. With one ticket, dispatch it in the foreground. With several, send them all in one message with `run_in_background: true`; each one notifies you when it finishes.
 
@@ -64,7 +65,7 @@ As each implementer reports:
 
 ## 4. Review
 
-Run `mattpocock-skills:code-review` (the fully qualified name; the bare `/code-review` is a different, built-in skill) from inside the ticket's worktree, with fixed point `<base SHA>` and spec `${TMPDIR:-/tmp}/work/<id>.md`.
+Run `mattpocock-skills:code-review` (the fully qualified name; the bare `/code-review` is a different, built-in skill) from inside the ticket's worktree, with fixed point `<base SHA>` and spec `${TMPDIR:-/tmp}/work/<repo>/<id>.md`.
 
 ## 5. One fix round
 
@@ -74,9 +75,11 @@ Send findings that are correct and inside the ticket's scope back to the same im
 
 ```sh
 git -C .claude/worktrees/<id> push -u origin HEAD
-gh pr create --title "<key>: <summary>" --body-file <body file>
+gh pr create --title "<type>(<key>): <summary>" --body-file <body file>
 tracker review <key>
 ```
+
+`<type>` is the conventional-commit type of the change (`feat`, `fix`, `refactor`...), because the squash-merge makes the title the commit subject on `main`.
 
 Open the PR non-draft, and only once. The body covers, in this order:
 
@@ -94,7 +97,7 @@ Once every ticket has a PR or has failed, send one table with a row per ticket: 
 
 ## Failure path
 
-When an implementer is BLOCKED or NEEDS_CONTEXT, or a push fails, for that ticket only:
+When an implementer is BLOCKED or NEEDS_CONTEXT, or `git worktree add` or a push fails, for that ticket only:
 
 1. `tracker comment <key> --body-file <file>`, saying what was attempted, what is missing, and the worktree path if it holds commits.
 2. `tracker needs-info <key>`.

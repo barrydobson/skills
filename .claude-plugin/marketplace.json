@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "barrydobson-skills",
-      "description": "Barry Dobson's agent skills",
+      "description": "Work ready-for-agent tickets to PRs unattended (/work), then verify merged work and close tickets (/finish).",
       "source": "./",
       "category": "engineering",
       "keywords": ["engineering", "skills"]
