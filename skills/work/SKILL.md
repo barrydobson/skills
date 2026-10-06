@@ -24,7 +24,8 @@ Then sort each candidate into one of two groups:
 
 - **Skipped, with the reason.** Use the first reason that applies:
   - its status is not the one mapped to `ready-for-agent`. A GitHub issue with no triage label is ready only when the human named it explicitly;
-  - it has a link with relation `is blocked by` to a ticket whose status is not the one mapped to `done`. Record it as "waits on <blocker> merging", including when the blocker is in this same set.
+  - it has a link with relation `is blocked by` to a ticket whose status is not the one mapped to `done`. Record it as "waits on <blocker> merging", including when the blocker is in this same set;
+  - it looks already delivered. Run `git fetch origin`, then `git log --oneline "origin/$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)" --grep <key>` and `gh pr list --search <key> --state all`. Ignore hits where the key is only a prefix of a longer one (`PI-17` in `PI-1717`). Record any other hit as "possibly delivered in <sha or PR URL>", so the human can override it at the check-in.
 - **Workable:** everything else.
 
 Every workable ticket is independent of the others, so they all run at once. Each ticket gets its own PR, because `/finish` maps one PR to one ticket. When two tickets look like one change, name the overlap in the check-in as a note for `to-tickets`, and still give them separate PRs.

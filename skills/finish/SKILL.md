@@ -28,6 +28,8 @@ Done when you hold a list of (ticket, PR, merge commit, worktree or none). If th
 
 Post-merge checks are the repo's own read-only checks that a merged change is live and healthy. Examples: "Terrateam apply succeeded on the PR", "the Argo app is synced and healthy", a Groundcover query. They live in the `## Post-merge checks` section of the repo's CLAUDE.md, one check per bullet. Each bullet says what to read and what counts as a pass.
 
+A bullet may also be a **waiver**: it names a CI check that can stay pending for good, and the read-only evidence that stands in for it. For example: "`terrateam apply` pending is satisfied when `terragrunt plan` on the merge commit shows no changes." Never infer or propose a waiver yourself; only the human writes one.
+
 - **The section exists:** use it.
 - **No section, attended run:** infer likely checks from the repo, for example a Terrateam config, Argo or Helm manifests, or monitor definitions. Propose them as bullets. That message holds only this one question, and nothing in step 3 runs until it is answered. Write the confirmed section into CLAUDE.md and tell the human it's an uncommitted change to commit.
 - **No section, unattended run:** carry on without it.
@@ -43,7 +45,7 @@ These checks run for every ticket:
    - The PR's checks: `gh pr checks <n> --json name,bucket`. Every bucket is `pass` or `skipping`.
    - The merge commit's checks: `gh api repos/{owner}/{repo}/commits/<merge commit>/check-runs --jq '.check_runs[] | {name, status, conclusion}'`. Every run is completed with `success`, `skipped` or `neutral`.
 
-   A `pending` bucket or an unfinished run means *not yet*: report it, and leave the ticket untouched for a later `/finish`. When both sources are empty, record "no checks configured".
+   A `pending` bucket or an unfinished run means *not yet*: report it, and leave the ticket untouched for a later `/finish`. The one exception is a check named by a waiver from step 2. Run the waiver's evidence read-only. If the evidence holds, record the check as "waived" with that output. If it doesn't, the check is still *not yet*. When both sources are empty, record "no checks configured".
 3. **Acceptance criteria hold against what shipped.** Read `tracker view <key>`: the summary, `descriptionText`, and any `## Agent Brief` comment, which is the contract. Read the shipped change with `gh pr diff <n>`, and the merged code at the merge commit. For every criterion, record one line:
    - **MET:** the evidence (file, test name, golden, command output);
    - **NOT MET:** what is missing;
