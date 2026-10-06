@@ -6,5 +6,5 @@
     "url": "https://github.com/barrydobson/skills"
   },
   "keywords": ["engineering", "skills", "productivity"],
-  "dependencies": ["mattpocock-skills@claude-plugins-official"]
+  "dependencies": ["mattpocock-skills@mattpocock"]
 }
