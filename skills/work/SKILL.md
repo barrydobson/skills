@@ -36,7 +36,7 @@ Done when every candidate is either workable or skipped with a reason.
 
 Send one message containing:
 
-- the plan: one row per workable ticket, with key, summary, branch name and implementer model;
+- the plan: one row per workable ticket, with key, summary, branch name, and implementer model and effort;
 - the skipped list, with reasons;
 - every open question, grouped by ticket. Look for missing acceptance criteria, ambiguous behaviour, and interfaces the ticket names that the code lacks. Also ask about any ticket whose component isn't this repo's `component` or that has no component: should it be worked here?
 
@@ -57,7 +57,7 @@ git worktree add .claude/worktrees/<id> -b <id>-<short-slug> "origin/$base"
 
 `<id>` is the lowercase Jira key (`pi-123`), or `gh-<n>` for a GitHub issue. If `.claude/worktrees/<id>` already exists from an earlier run, reuse it instead of adding it, and record its HEAD as the base SHA. Otherwise record the base SHA of the new worktree. Write the ticket to `${TMPDIR:-/tmp}/work/<repo>/<id>.md`, where `<repo>` is the repo's directory name: the summary, `descriptionText`, the agent brief, and the answers from step 2.
 
-Then dispatch one implementer per ticket with [references/implementer.md](references/implementer.md). Model: `sonnet`, or `opus` when the brief or a comment asks for it. With one ticket, dispatch it in the foreground. With several, send them all in one message with `run_in_background: true`; each one notifies you when it finishes.
+Then dispatch one implementer per ticket with [references/implementer.md](references/implementer.md). Model: `sonnet` by default; `haiku` for a small, mechanical ticket (config, docs, a rename) or when the brief or a comment asks for it; `opus` when the brief or a comment asks for it. Effort: `low` for a mechanical ticket on `haiku`, the level the brief or a comment names, or unset otherwise. With one ticket, dispatch it in the foreground. With several, send them all in one message with `run_in_background: true`; each one notifies you when it finishes.
 
 As each implementer reports:
 

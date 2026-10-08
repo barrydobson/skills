@@ -5,7 +5,8 @@ Fill every `<...>`. Never pass a `name`: a named dispatch becomes an asynchronou
 ```
 Agent (general-purpose):
   description: "Implement <key>"
-  model: <sonnet | opus - always set>
+  model: <haiku | sonnet | opus - always set>
+  effort: <low | medium | high | xhigh | max - omit when unset>
   run_in_background: <false for one ticket, true for a set>
   prompt: |
     You are implementing ticket <key>: <summary>.
