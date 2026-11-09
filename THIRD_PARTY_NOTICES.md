@@ -4,7 +4,7 @@ Some skills in this plugin are copied from other projects, and some of those cop
 
 ## mattpocock/skills
 
-Skills: `handoff`, `retro`, `writing-for-agents`, `diagnosing-bugs`, `wizard`.
+Skills: `handoff`, `retro`, `writing-for-agents`, `diagnosing-bugs`, `wizard`, `grilling`, `to-spec`, `to-tickets`, `triage`, `setup-matt-pocock-skills`.
 Source: <https://github.com/mattpocock/skills>
 
 ```text

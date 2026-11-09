@@ -34,6 +34,11 @@ Add the repository as a marketplace from its local path:
 | [wizard](skills/wizard/) | Generates a bash wizard that walks a human through steps only they can do. |
 | [correct](skills/correct/) | `/correct` finds mistakes agents repeat in a repo and makes each one impossible. |
 | [blast-radius](skills/blast-radius/) | `/blast-radius` finds what a change could break outside the diff, and proves the fact it is safe because of. |
+| [grilling](skills/grilling/) | Grills you about a plan, decision or idea until it holds up. |
+| [to-spec](skills/to-spec/) | `/to-spec` turns the conversation into a spec on the issue tracker. |
+| [to-tickets](skills/to-tickets/) | `/to-tickets` breaks a plan into tracer-bullet tickets, one repo each, with blocking edges. |
+| [triage](skills/triage/) | `/triage` moves issues through triage roles and writes agent-ready briefs. |
+| [setup-matt-pocock-skills](skills/setup-matt-pocock-skills/) | `/setup-matt-pocock-skills` configures a repo's issue tracker, triage labels and domain docs for the planning skills. |
 
 Some of these are copied from other projects. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) lists them and their licences. To see what has changed upstream since they were copied, run:
 
