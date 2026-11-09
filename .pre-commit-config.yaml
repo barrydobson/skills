@@ -7,12 +7,15 @@ repos:
         args: [-x]
         language: system
         types: [shell]
+        # Vendored upstream scripts stay byte-identical so upstream-diff.sh stays readable.
+        exclude: ^skills/(wizard|diagnosing-bugs)/
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.12.0-2
     hooks:
       - id: shfmt
         args: [-i, "2", -ci, --write]
+        exclude: ^skills/(wizard|diagnosing-bugs)/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
