@@ -27,6 +27,8 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 
 4. Present these candidates to the user, in order of severity.
 
+5. If `~/vault/retros/` exists, offer to save the findings there once the user has been through them. Follow `~/vault/retros/_guide.md` for the filename, frontmatter and layout.
+
 ## Reference
 
 ### Implementation vs Review
