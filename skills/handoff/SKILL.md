@@ -8,7 +8,7 @@ metadata:
   upstream_sha: d1478fcb140db0b93c0c8df17bcfd311844749d0
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS (`$TMPDIR`, else `/tmp`; `%TEMP%` on Windows) - not the current workspace.
+Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS (`$TMPDIR`, else `/tmp`; `%TEMP%` on Windows) - not the current workspace. When you finish, give the user the document's full resolved path, as `realpath` prints it, never a path that starts with `$TMPDIR` or `~`.
 
 Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for.
 
