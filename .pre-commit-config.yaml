@@ -7,7 +7,7 @@ repos:
         args: [-x]
         language: system
         types: [shell]
-        # Vendored upstream scripts stay byte-identical so upstream-diff.sh stays readable.
+        # Vendored upstream scripts stay byte-identical so tools/upstream-diff.sh stays readable.
         exclude: ^skills/(wizard|diagnosing-bugs)/
 
   - repo: https://github.com/scop/pre-commit-shfmt
