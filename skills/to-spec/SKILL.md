@@ -29,7 +29,7 @@ The problem that the user is facing, from the user's perspective.
 
 ## Solution
 
-The solution to the problem, from the user's perspective.
+The solution to the problem, from the user's perspective. Open with one plain sentence that someone outside the work can follow: what will be different once it ships.
 
 ## User Stories
 
