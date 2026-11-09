@@ -16,6 +16,8 @@ skills/<skill-name>/    # One directory per skill:
   SKILL.md              #   Skill definition (frontmatter + instructions)
   references/           #   Supporting reference docs read by the skill
   assets/               #   Static assets (logos, images)
+agents/                 # Subagents, namespaced as barrydobson-skills:<name>
+tools/                  # Repo maintenance scripts (/scripts/ is gitignored scratch)
 ```
 
 A doc two skills both depend on goes in a root `shared/` directory, reached as
@@ -28,6 +30,16 @@ skill listing and be liable to trigger on its own.
 Add `skills/<skill-name>/SKILL.md`. Claude Code discovers it from the `skills/` directory, so no manifest change is needed.
 
 A skill tied to one machine, a local binary or the Obsidian vault belongs in dotfiles as a user skill. So does anything that names Tote internals, because this repo is public.
+
+### Vendored skills
+
+A skill copied from another project keeps its upstream text, with these rules:
+
+- Record the upstream tree URL and full commit under `metadata.source` and `metadata.upstream_sha` in the frontmatter.
+- Commit the verbatim copy first and each local change after it, one commit each, so the local changes stay readable against upstream.
+- Add the project and its licence to `THIRD_PARTY_NOTICES.md`.
+- Leave its bundled scripts as upstream wrote them. Add their directory to the `shellcheck` and `shfmt` excludes in `.pre-commit-config.yaml`.
+- Run `tools/upstream-diff.sh` to see what changed upstream before pulling an update.
 
 ## Versioning and release
 

@@ -22,6 +22,25 @@ Add the repository as a marketplace from its local path:
 | Skill | Description |
 |-------|-------------|
 | [file-pr](skills/file-pr/) | Files a concise pull request with a problem-first body, evidence and merge risk. |
+| [leaving-pr-comments](skills/leaving-pr-comments/) | Rules for leaving comments on GitHub. |
+| [reviewing-plugins](skills/reviewing-plugins/) | Reviews skills, plugins and marketplaces against current Anthropic guidance. |
+| [be-ambitious](skills/be-ambitious/) | `/be-ambitious` makes a task or prompt more ambitious. |
+| [technical-docs](skills/technical-docs/) | `/technical-docs` writes reader-facing prose in Google developer documentation style, through the `technical-writer` agent. |
+| [personal-brand](skills/personal-brand/) | Applies my personal colours and fonts to visual output. |
+| [handoff](skills/handoff/) | `/handoff` compacts the conversation into a document another agent can pick up. |
+| [retro](skills/retro/) | `/retro` runs a retrospective on a coding session. |
+| [writing-for-agents](skills/writing-for-agents/) | How to write skills, `AGENTS.md` and `CLAUDE.md`. |
+| [diagnosing-bugs](skills/diagnosing-bugs/) | A diagnosis loop for hard bugs, CI failures and performance regressions. |
+| [wizard](skills/wizard/) | Generates a bash wizard that walks a human through steps only they can do. |
+| [correct](skills/correct/) | `/correct` finds mistakes agents repeat in a repo and makes each one impossible. |
+| [blast-radius](skills/blast-radius/) | `/blast-radius` finds what a change could break outside the diff, and proves the fact it is safe because of. |
+
+Some of these are copied from other projects. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) lists them and their licences. To see what has changed upstream since they were copied, run:
+
+```sh
+tools/upstream-diff.sh        # summary
+tools/upstream-diff.sh -p     # with patches
+```
 
 ## Releasing
 
