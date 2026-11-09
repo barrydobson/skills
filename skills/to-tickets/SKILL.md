@@ -19,9 +19,9 @@ The issue tracker and triage label vocabulary should have been provided to you. 
 
 Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
 
-### 2. Explore the codebase (optional)
+### 2. Read every repo the tickets will touch
 
-If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+Before drafting, read the code of every repo a ticket will touch, with a read-only subagent or session per repo if they are not open here. Never ticket a repo you have not read: a spec or a note is not a substitute. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
 
 Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 
@@ -34,6 +34,8 @@ Break the work into **tracer bullet** tickets.
 - Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests): vertical, NOT a horizontal slice of one layer
 - A completed slice is demoable or verifiable on its own
 - Each slice is sized to fit in a single fresh context window
+- Each ticket names exactly one repo. A slice is vertical within that repo: a tracer that needs two repos is two tickets joined by a blocking edge, and a sweep across N repos is N tickets
+- Each ticket has one deliverable. If "What to build" needs a list of unrelated artefacts, or its acceptance needs throwaway apps in other repos, split it
 - Any prefactoring should be done first
 
 </vertical-slice-rules>
@@ -47,8 +49,11 @@ Give each ticket its **blocking edges**: the other tickets that must complete be
 Present the proposed breakdown as a numbered list. For each ticket, show:
 
 - **Title**: short descriptive name
+- **Repo**: the one repo it changes
 - **Blocked by**: which other tickets (if any) must complete first
 - **What it delivers**: the end-to-end behaviour this ticket makes work
+
+List first any ticket you flag as large, multi-repo or unsure, with the reason. Where the tracker has components, check each ticket's repo has one; if one is missing, say so here and ask. Never leave a component blank and never guess one.
 
 Ask the user:
 
@@ -56,9 +61,13 @@ Ask the user:
 - Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
 - Should any tickets be merged or split further?
 
-Iterate until the user approves the breakdown.
+Iterate until the user approves the breakdown. Never recommend approving it as proposed while any of your own warnings is open.
 
 ### 5. Publish the tickets to the configured tracker
+
+Before publishing, split any ticket that might not fit one fresh context. Never publish a placeholder as `ready-for-agent`.
+
+Where the tracker has components, set each ticket's component to its repo.
 
 Publish the approved tickets. **How** depends on the tracker `/setup-matt-pocock-skills` configured; the tickets are the same either way, only the shape of the blocking edges changes:
 
@@ -74,6 +83,8 @@ Do NOT close or modify any parent issue.
 # <NN>: <Ticket title>
 
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
+
+**Repo:** the one repo this ticket changes.
 
 **Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
 
