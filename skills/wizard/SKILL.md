@@ -39,6 +39,8 @@ Copy `template.sh` to the target path. Replace the example stage with one `stage
 
 Hold the bar the template sets: open the URL before asking for its value, use `ask_secret` for anything secret, `write_env` every persisted value, `set_secret` only the values CI actually needs, and `confirm` before any irreversible action. Each `stage` clears the screen so only the current step is visible: keep a stage to one focused task so nothing the human needs scrolls away. Don't touch the library above the marker.
 
+Make every stage safe to re-run. Before an action, check whether it is already done (the resource exists, `gh secret list` shows the name, the migration has run) and offer to skip it. A half-finished run must be resumable by running the wizard again.
+
 ### 4. Verify and hand off
 
 - `bash -n <script>`; run `shellcheck` if available.
