@@ -37,6 +37,8 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
 10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
 
+**CI failures.** Read the failure with `gh run view <run-id> --log-failed`, then rebuild the failing step locally, with the same command, inputs and tool versions, as one of the loops above. Rerunning the CI job is not a loop: each turn costs minutes and you cannot instrument it.
+
 Build the right feedback loop, and the bug is 90% fixed.
 
 ### Tighten the loop
