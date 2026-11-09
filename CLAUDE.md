@@ -39,7 +39,9 @@ A skill copied from another project keeps its upstream text, with these rules:
 - Commit the verbatim copy first and each local change after it, one commit each, so the local changes stay readable against upstream.
 - Add the project and its licence to `THIRD_PARTY_NOTICES.md`.
 - Leave its bundled scripts as upstream wrote them. Add their directory to the `shellcheck` and `shfmt` excludes in `.pre-commit-config.yaml`.
-- Run `tools/upstream-diff.sh` to see what changed upstream before pulling an update.
+- Run `tools/upstream-diff.sh` to see what changed upstream, and `--local <skill>` to see your own changes against the recorded base.
+- Pull an update with `--merge <skill>`. It three-way merges upstream's change into your copy and moves `upstream_sha` forward. Resolve any conflict markers, review `git diff`, then commit it as `chore(<skill>): merge upstream <sha>`.
+- Give each local change its own commit, scoped to the skill (`feat(<skill>): ...`), with the reason in the body.
 
 ## Versioning and release
 

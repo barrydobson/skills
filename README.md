@@ -44,8 +44,10 @@ Add the repository as a marketplace from its local path:
 Some of these are copied from other projects. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) lists them and their licences. To see what has changed upstream since they were copied, run:
 
 ```sh
-tools/upstream-diff.sh        # summary
-tools/upstream-diff.sh -p     # with patches
+tools/upstream-diff.sh                 # what changed upstream
+tools/upstream-diff.sh -p              # the same, with patches
+tools/upstream-diff.sh --local <skill> # your local changes to a skill
+tools/upstream-diff.sh --merge <skill> # pull upstream changes into your copy
 ```
 
 ## Releasing
