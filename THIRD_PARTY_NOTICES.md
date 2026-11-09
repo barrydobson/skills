@@ -33,7 +33,7 @@ SOFTWARE.
 
 ## pstack (cursor/plugins)
 
-Skills: `correct`, `blast-radius`.
+Skills: `correct`, `blast-radius`, `unslop`.
 Source: <https://github.com/cursor/plugins/tree/main/pstack>
 
 ```text

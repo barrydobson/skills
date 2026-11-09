@@ -34,6 +34,7 @@ Add the repository as a marketplace from its local path:
 | [wizard](skills/wizard/) | Generates a bash wizard that walks a human through steps only they can do. |
 | [correct](skills/correct/) | `/correct` finds mistakes agents repeat in a repo and makes each one impossible. |
 | [blast-radius](skills/blast-radius/) | `/blast-radius` finds what a change could break outside the diff, and proves the fact it is safe because of. |
+| [unslop](skills/unslop/) | `/unslop` cuts AI tells from any writing. |
 | [grilling](skills/grilling/) | Grills you about a plan, decision or idea until it holds up. |
 | [to-spec](skills/to-spec/) | `/to-spec` turns the conversation into a spec on the issue tracker. |
 | [to-tickets](skills/to-tickets/) | `/to-tickets` breaks a plan into tracer-bullet tickets, one repo each, with blocking edges. |
