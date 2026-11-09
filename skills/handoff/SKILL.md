@@ -14,6 +14,8 @@ Include a "suggested skills" section in the document, naming which skills the ne
 
 Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
 
+Use absolute paths for every file, script and skill the next agent needs. It may start in a different repo, where relative paths and that repo's own skills do not resolve.
+
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 
 If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
