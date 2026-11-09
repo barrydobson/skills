@@ -1,10 +1,9 @@
 {
   "name": "barrydobson-skills",
-  "description": "Work ready-for-agent tickets to PRs unattended (/work), then verify merged work and close tickets (/finish).",
+  "description": "Personal, portable Claude Code skills.",
   "author": {
     "name": "barrydobson",
     "url": "https://github.com/barrydobson/skills"
   },
-  "keywords": ["engineering", "skills", "productivity"],
-  "dependencies": ["mattpocock-skills@mattpocock"]
+  "keywords": ["engineering", "skills", "productivity"]
 }

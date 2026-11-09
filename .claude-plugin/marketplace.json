@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "barrydobson-skills",
-      "description": "Work ready-for-agent tickets to PRs unattended (/work), then verify merged work and close tickets (/finish).",
+      "description": "Personal, portable Claude Code skills.",
       "source": "./",
       "category": "engineering",
       "keywords": ["engineering", "skills"]

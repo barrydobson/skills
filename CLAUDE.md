@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A personal Claude Code plugin, public on GitHub, `barrydobson-skills`, in the repo `barrydobson/skills`. The repo root is both the plugin and a single-plugin marketplace (`barrydobson`) whose entry has `source: "./"`. It holds `/work` and `/finish`. The job-to-commands table is in README.md.
+A personal Claude Code plugin, public on GitHub, `barrydobson-skills`, in the repo `barrydobson/skills`. The repo root is both the plugin and a single-plugin marketplace (`barrydobson`) whose entry has `source: "./"`. It holds personal skills that work on any machine. The skills table is in README.md.
 
 ## Project Structure
 
@@ -27,7 +27,7 @@ skill listing and be liable to trigger on its own.
 
 Add `skills/<skill-name>/SKILL.md`. Claude Code discovers it from the `skills/` directory, so no manifest change is needed.
 
-A skill that only you use and that fits no workflow here belongs in dotfiles as a user skill.
+A skill tied to one machine, a local binary or the Obsidian vault belongs in dotfiles as a user skill. So does anything that names Tote internals, because this repo is public.
 
 ## Versioning and release
 
