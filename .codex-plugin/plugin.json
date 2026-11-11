@@ -1,0 +1,10 @@
+{
+  "name": "barrydobson-skills",
+  "description": "Personal, portable agent skills.",
+  "author": {
+    "name": "barrydobson",
+    "url": "https://github.com/barrydobson/skills"
+  },
+  "skills": "./skills/",
+  "keywords": ["engineering", "skills", "productivity"]
+}

@@ -61,7 +61,7 @@ Ask the user:
 - Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
 - Should any tickets be merged or split further?
 
-Put these as numbered questions with lettered options, as `${CLAUDE_PLUGIN_ROOT}/shared/answering.md` describes. Iterate until the user approves the breakdown. Never recommend approving it as proposed while any of your own warnings is open.
+Put these as numbered questions with lettered options, as [shared/answering.md](../../shared/answering.md) describes. Resolve that path from this skill's directory. Iterate until the user approves the breakdown. Never recommend approving it as proposed while any of your own warnings is open.
 
 ### 5. Publish the tickets to the configured tracker
 

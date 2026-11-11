@@ -11,7 +11,9 @@ Write reader-facing prose the way the Google Developer Documentation Style Guide
 
 ## Writing a whole document
 
-Given a document to create or overhaul - a README, an API reference, a user guide, an architecture doc - dispatch the `barrydobson-skills:technical-writer` agent. It owns the section templates and the audit, research, write, review pass; this skill is the prose style it writes to, and it reads this file itself. Hand it the target path, the source material to read, and this file's path: `${CLAUDE_SKILL_DIR}/SKILL.md`.
+Given a document to create or overhaul - a README, an API reference, a user guide, an architecture doc - dispatch the `barrydobson-skills:technical-writer` agent when that agent is available. It owns the section templates and the audit, research, write, review pass; this skill is the prose style it writes to, and it reads this file itself. Hand it the target path, the source material to read, and this `SKILL.md` file's resolved path.
+
+In Codex, read [the technical-writer instructions](../../agents/technical-writer.md), resolving the path from this skill's directory. Pass those instructions to an available subagent, or follow them in the current session when delegation is unavailable.
 
 Write inline instead when the ask is prose in flight: a chat answer, a report, a section of a document that already exists, or a rewrite of text already on screen.
 

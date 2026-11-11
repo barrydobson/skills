@@ -1,13 +1,26 @@
 # Barry Dobson's Skills
 
-A personal Claude Code plugin, `barrydobson-skills`, published from its own single-plugin marketplace, `barrydobson`.
+A personal agent skills plugin, `barrydobson-skills`, for Claude Code and Codex, published from its own single-plugin marketplace, `barrydobson`. Both use the same `skills/` directory.
 
 ## Installation
+
+### Claude Code
 
 ```sh
 /plugin marketplace add barrydobson/skills
 /plugin install barrydobson-skills@barrydobson
 ```
+
+### Codex
+
+```sh
+codex plugin marketplace add barrydobson/skills
+codex plugin add barrydobson-skills@barrydobson
+```
+
+Start a new session after installing. Use `/skills` or type `$` to select a skill, for example `$file-pr`. Skills marked explicit-only in Claude Code stay explicit-only in Codex through `agents/openai.yaml`.
+
+The [OpenAI plugin packaging guide](https://developers.openai.com/plugins/build/plugins) documents the Codex manifest and marketplace format. This repo uses the supported `.codex-plugin/plugin.json` format to keep the existing unversioned release workflow.
 
 ### Local Development
 
@@ -15,6 +28,13 @@ Add the repository as a marketplace from its local path:
 
 ```sh
 /plugin marketplace add ~/_git/barrydobson/skills
+```
+
+For Codex, register the checkout and install the plugin:
+
+```sh
+codex plugin marketplace add ~/_git/barrydobson/skills
+codex plugin add barrydobson-skills@barrydobson
 ```
 
 ## Skills
@@ -52,10 +72,17 @@ tools/upstream-diff.sh --merge <skill> # pull upstream changes into your copy
 
 ## Releasing
 
-There is nothing to release. The plugin carries no `version`, so Claude Code resolves it to the git SHA of `main`, and every merge is a release. To pick up a change:
+There is nothing to release. The manifests carry no `version`. Claude Code resolves the plugin to the git SHA of `main`, so every merge is a release. To pick up a change in Claude Code:
 
 ```sh
 /plugin marketplace update barrydobson
 ```
 
 Then update the plugin from `/plugin`, and restart the session.
+
+For a Git-backed Codex installation, refresh the marketplace and reinstall the plugin, then start a new session:
+
+```sh
+codex plugin marketplace upgrade barrydobson
+codex plugin add barrydobson-skills@barrydobson
+```

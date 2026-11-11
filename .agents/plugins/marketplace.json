@@ -1,0 +1,20 @@
+{
+  "name": "barrydobson",
+  "interface": {
+    "displayName": "Barry Dobson's Skills"
+  },
+  "plugins": [
+    {
+      "name": "barrydobson-skills",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

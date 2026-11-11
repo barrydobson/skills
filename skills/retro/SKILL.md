@@ -25,7 +25,7 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 - **No-ops**: look for instructions in steering files that don't modify the agent's behavior. _Use when_ the steering files are large and unwieldy.
 - **Information access**: look for opportunities to increase the agent's access to information. Teeing dev server logs, readonly access to third-party services. _Use when_ a crucial piece of information was not available to the agent.
 
-4. Present these candidates to the user, in order of severity. Number them, and give each one lettered options as `${CLAUDE_PLUGIN_ROOT}/shared/answering.md` describes.
+4. Present these candidates to the user, in order of severity. Number them, and give each one lettered options as [shared/answering.md](../../shared/answering.md) describes. Resolve that path from this skill's directory.
 
 5. If `~/vault/retros/` exists, offer to save the findings there once the user has been through them. Follow `~/vault/retros/_guide.md` for the filename, frontmatter and layout.
 
