@@ -6,7 +6,7 @@ user-invocable: false
 
 # /work through hc
 
-The `/work` skill still owns the steps: read, decide, implement, review, PR. This skill only changes who does steps 3 and 4. You stay the coordinator: you hold the decisions, open the PRs and move the tickets. Run `hc --skill` once before the first start if you have not read it this session.
+The `/work` skill still owns the steps: read, decide, implement, review, PR. This skill changes who does steps 3 and 4, and adds a review and fix round after step 4 and before step 5 opens the PR. You stay the coordinator: you hold the decisions, open the PRs and move the tickets. Run `hc --skill` once before the first start if you have not read it this session.
 
 ## Starting a child
 
@@ -26,7 +26,7 @@ Names are shared with every session on the machine, so use `<repo>-<id>-impl` an
    - `--model` is always set; the child does not inherit yours. `sonnet` unless the ticket asks otherwise.
    - `--permission-mode` is this session's mode. An hc child starts in `default` and stops at its first edit without it. Never pass a mode more permissive than your own.
 
-**Reviewer**, the `codex-reviewer` template, once the implementer reports DONE. The template carries the review contract, so the task names only the target and the intent:
+**Reviewer**, the `codex-reviewer` template, once the implementer reports DONE: after `/work` step 4, before step 5. The template carries the review contract, so the task names only the target and the intent:
 
 ```sh
 hc run --bg --name <repo>-<id>-review --cwd <worktree path> codex-reviewer \
