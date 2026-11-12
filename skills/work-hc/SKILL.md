@@ -12,27 +12,36 @@ The `/work` skill still owns the steps: read, decide, implement, review, PR. Thi
 
 Names are shared with every session on the machine, so use `<repo>-<id>-impl` and `<repo>-<id>-review`.
 
-1. Write the prompt to `${TMPDIR:-/tmp}/work/<repo>/<id>-<impl | review>-prompt.md` with the Write tool.
-   - **Implementer:** the ticket key, the worktree path and branch, the human's answers from step 2, and: "Implement this ticket following steps 3 and 4 of the `tote-issue-tracker:work` skill. Commit on the branch; pushing, the PR and the tracker are mine. Reply with status (DONE / BLOCKED), each criterion met or not met with its evidence, and rulings."
-   - **Reviewer:** "Invoke `tote-issue-tracker:reviewing-changes` for <key>: worktree <path>, base <SHA>. You did not write this code and do not change it. Reply with the skill's report only."
-   - End both with: "Write your reply to `${TMPDIR:-/tmp}/work/<repo>/<id>-<impl | review>-report.md`, then `hc send <your $HC_TERMINAL_ID> \"<that path>\"`. Do the same after every later turn. Start no agents."
+**Implementer**, a Claude terminal:
+
+1. Write the prompt to `${TMPDIR:-/tmp}/work/<repo>/<id>-impl-prompt.md` with the Write tool: the ticket key, the worktree path and branch, the human's answers from step 2, and "Implement this ticket following steps 3 and 4 of the `tote-issue-tracker:work` skill. Commit on the branch; pushing, the PR and the tracker are mine. Reply with status (DONE / BLOCKED), each criterion met or not met with its evidence, and rulings. Write your reply to `${TMPDIR:-/tmp}/work/<repo>/<id>-impl-report.md`, then `hc send <your $HC_TERMINAL_ID> \"<that path>\"`. Do the same after every later turn. Start no agents."
 2. Start it in the worktree:
 
    ```sh
-   hc run --bg --name <name> --cwd <worktree path> claude \
+   hc run --bg --name <repo>-<id>-impl --cwd <worktree path> claude \
      --model <model> --permission-mode <mode> \
      "Read <prompt file> and follow it."
    ```
 
-   - `--model` is always set; the child does not inherit yours. `sonnet` for implementers unless the ticket asks otherwise, `opus` for reviewers.
+   - `--model` is always set; the child does not inherit yours. `sonnet` unless the ticket asks otherwise.
    - `--permission-mode` is this session's mode. An hc child starts in `default` and stops at its first edit without it. Never pass a mode more permissive than your own.
-3. Check `first_message.sent` in the JSON. If it is false, `hc read <name>` before anything else; never resend blindly.
+
+**Reviewer**, the `codex-reviewer` template, once the implementer reports DONE. The template carries the review contract, so the task names only the target and the intent:
+
+```sh
+hc run --bg --name <repo>-<id>-review --cwd <worktree path> codex-reviewer \
+  "Review branch: git diff <base SHA>...HEAD. Intent: <ticket key and summary>."
+```
+
+If `hc templates` lacks `codex-reviewer`, report BLOCKED: the herdr-core package is not stowed.
+
+After either start, check `first_message.sent` in the JSON. If it is false, `hc read <name>` before anything else; never resend blindly. A start-up prompt on the screen (folder trust, an update) counts as `blocked`.
 
 ## Waiting
 
-Wait with `hc wait --children any`, never sleep or poll. A report arrives tagged `<hc from="<t> <name>">`; read the file it names before acting. A `timeout` is a check-in: wait again.
+Wait with `hc wait --children any`, never sleep or poll. A report arrives tagged `<hc from="<t> <name>">`. The implementer's names a file: read it before acting. The reviewer's carries its findings inline. A `timeout` is a check-in: wait again.
 
-- **`blocked`**: the child waits on a person, usually a permission prompt. Leave it for the human, who can see it in Herdr, and carry on with other tickets. Still blocked at the end: report "blocked in <name>".
+- **`blocked`**: the child waits on a person, usually a permission prompt. Send "blocked in <name>: <what the screen asks>" to `reach` at once, if the request came over hc; nobody may be watching Herdr. Leave the child for the human and carry on with other tickets.
 - **`error`** or **exited**: `hc read --lines 100 <name>`, and treat it as BLOCKED with what the screen shows.
 
 ## Fix round
