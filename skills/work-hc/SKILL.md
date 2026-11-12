@@ -33,6 +33,8 @@ hc run --bg --name <repo>-<id>-review --cwd <worktree path> codex-reviewer \
   "Review branch: git diff <base SHA>...HEAD. Intent: <ticket key and summary>."
 ```
 
+Change nothing in the worktree while the reviewer runs: no edits, commits, resets or checkouts. Do side work in another worktree.
+
 If `hc templates` lacks `codex-reviewer`, report BLOCKED: the herdr-core package is not stowed.
 
 After either start, check `first_message.sent` in the JSON. If it is false, `hc read <name>` before anything else; never resend blindly. A start-up prompt on the screen (folder trust, an update) counts as `blocked`.
