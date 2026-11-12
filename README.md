@@ -58,6 +58,7 @@ codex plugin add barrydobson-skills@barrydobson
 | [grilling](skills/grilling/) | Grills you about a plan, decision or idea until it holds up. |
 | [to-spec](skills/to-spec/) | `/to-spec` turns the conversation into a spec on the issue tracker. |
 | [to-tickets](skills/to-tickets/) | `/to-tickets` breaks a plan into tracer-bullet tickets, one repo each, with blocking edges. |
+| [work-hc](skills/work-hc/) | Runs `/tote-issue-tracker:work`'s implementers and reviewers as `hc` terminals inside Herdr. |
 | [triage](skills/triage/) | `/triage` moves issues through triage roles and writes agent-ready briefs. |
 | [setup-matt-pocock-skills](skills/setup-matt-pocock-skills/) | `/setup-matt-pocock-skills` configures a repo's issue tracker, triage labels and domain docs for the planning skills. |
 
