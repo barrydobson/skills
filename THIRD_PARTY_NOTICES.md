@@ -59,3 +59,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## anthropics/skills
+
+Skills: `theme-factory`.
+Source: <https://github.com/anthropics/skills>
+
+Copyright 2026 Anthropic, PBC. Licensed under the Apache License, Version 2.0. The full licence text ships with the skill in `skills/theme-factory/LICENSE.txt`.
