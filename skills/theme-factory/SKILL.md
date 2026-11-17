@@ -1,6 +1,6 @@
 ---
 name: theme-factory
-description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly.
+description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 12 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly. Includes the user's personal Voltaic themes (dark and light); use them when the user asks for "my brand", "my style", "my colours" or "personal branded" output, or builds anything representing them personally. Do not use Voltaic for work output that follows an employer or client brand.
 license: Complete terms in LICENSE.txt
 metadata:
   source: https://github.com/anthropics/skills/tree/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/theme-factory
@@ -21,27 +21,31 @@ To apply consistent, professional styling to presentation slide decks, use this 
 
 ## Usage Instructions
 
+If the user asks for their own brand, style or colours, or the output represents them personally, skip the steps below and apply Voltaic Dark. Use Voltaic Light for print or when the user asks for it.
+
 To apply styling to a slide deck or other artifact:
 
-1. **Show the theme showcase**: Display the `theme-showcase.pdf` file to allow users to see all available themes visually. Do not make any modifications to it; simply show the file for viewing.
+1. **Show the theme showcase**: Display the `theme-showcase.pdf` file to allow users to see all available themes visually. Do not make any modifications to it; simply show the file for viewing. The showcase does not include the two Voltaic themes, so describe those from their theme files.
 2. **Ask for their choice**: Ask which theme to apply to the deck
 3. **Wait for selection**: Get explicit confirmation about the chosen theme
 4. **Apply the theme**: Once a theme has been chosen, apply the selected theme's colors and fonts to the deck/artifact
 
 ## Themes Available
 
-The following 10 themes are available, each showcased in `theme-showcase.pdf`:
+The following 12 themes are available. Themes 3 to 12 are showcased in `theme-showcase.pdf`:
 
-1. **Ocean Depths** - Professional and calming maritime theme
-2. **Sunset Boulevard** - Warm and vibrant sunset colors
-3. **Forest Canopy** - Natural and grounded earth tones
-4. **Modern Minimalist** - Clean and contemporary grayscale
-5. **Golden Hour** - Rich and warm autumnal palette
-6. **Arctic Frost** - Cool and crisp winter-inspired theme
-7. **Desert Rose** - Soft and sophisticated dusty tones
-8. **Tech Innovation** - Bold and modern tech aesthetic
-9. **Botanical Garden** - Fresh and organic garden colors
-10. **Midnight Galaxy** - Dramatic and cosmic deep tones
+1. **Voltaic Dark** - Near-black zinc with an electric lime accent; the user's personal theme
+2. **Voltaic Light** - Warm off-white paper with a deep olive accent; the user's personal theme for print
+3. **Ocean Depths** - Professional and calming maritime theme
+4. **Sunset Boulevard** - Warm and vibrant sunset colors
+5. **Forest Canopy** - Natural and grounded earth tones
+6. **Modern Minimalist** - Clean and contemporary grayscale
+7. **Golden Hour** - Rich and warm autumnal palette
+8. **Arctic Frost** - Cool and crisp winter-inspired theme
+9. **Desert Rose** - Soft and sophisticated dusty tones
+10. **Tech Innovation** - Bold and modern tech aesthetic
+11. **Botanical Garden** - Fresh and organic garden colors
+12. **Midnight Galaxy** - Dramatic and cosmic deep tones
 
 ## Theme Details
 

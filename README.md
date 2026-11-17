@@ -46,7 +46,7 @@ codex plugin add barrydobson-skills@barrydobson
 | [reviewing-plugins](skills/reviewing-plugins/) | Reviews skills, plugins and marketplaces against current Anthropic guidance. |
 | [be-ambitious](skills/be-ambitious/) | `/be-ambitious` makes a task or prompt more ambitious. |
 | [technical-docs](skills/technical-docs/) | `/technical-docs` writes reader-facing prose in Google developer documentation style, through the `technical-writer` agent. |
-| [personal-brand](skills/personal-brand/) | Applies my personal colours and fonts to visual output. |
+| [theme-factory](skills/theme-factory/) | Applies a colour and font theme to visual output, including my Voltaic dark and light themes. |
 | [handoff](skills/handoff/) | `/handoff` compacts the conversation into a document another agent can pick up. |
 | [retro](skills/retro/) | `/retro` runs a retrospective on a coding session. |
 | [writing-for-agents](skills/writing-for-agents/) | How to write skills, `AGENTS.md` and `CLAUDE.md`. |
