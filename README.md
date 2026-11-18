@@ -43,7 +43,7 @@ codex plugin add barrydobson-skills@barrydobson
 |-------|-------------|
 | [file-pr](skills/file-pr/) | Files a concise pull request with a problem-first body, evidence and merge risk. |
 | [leaving-pr-comments](skills/leaving-pr-comments/) | Rules for leaving comments on GitHub. |
-| [reviewing-plugins](skills/reviewing-plugins/) | Reviews skills, plugins and marketplaces against current Anthropic guidance. |
+| [writing-skills](skills/writing-skills/) | Writes and reviews skills against Anthropic best practice, with a findings table and a fix per issue. |
 | [be-ambitious](skills/be-ambitious/) | `/be-ambitious` makes a task or prompt more ambitious. |
 | [technical-docs](skills/technical-docs/) | `/technical-docs` writes reader-facing prose in Google developer documentation style, through the `technical-writer` agent. |
 | [theme-factory](skills/theme-factory/) | Applies a colour and font theme to visual output, including my Voltaic dark and light themes. |
