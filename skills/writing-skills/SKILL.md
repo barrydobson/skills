@@ -1,6 +1,6 @@
 ---
 name: writing-skills
-description: Writes new Claude skills and reviews existing ones against Anthropic's skill-authoring best practice, reporting every issue in a table with a concrete fix. Covers SKILL.md frontmatter, descriptions and triggering, invocation control, context cost, progressive disclosure, workflows, bundled scripts and testing. Use when the user asks to write, create, draft, review, audit, tidy or improve a skill or SKILL.md, asks why a skill does not trigger or triggers too often, or asks whether a skill follows best practice. Do not use to run eval benchmarks or tune a description by measurement (that is skill-creator), to review plugin manifests, hooks or marketplaces, or to write CLAUDE.md or AGENTS.md (that is writing-for-agents).
+description: Writes new Claude skills and reviews existing ones against Anthropic's skill-authoring best practice, reporting every issue in a table with a concrete fix. Use when the user asks to write, create, draft, review, audit, tidy or improve a skill or SKILL.md, asks why a skill does not trigger or triggers too often, or asks whether a skill follows best practice. Do not use to run eval benchmarks or tune a description by measurement (that is skill-creator), to review plugin manifests, hooks or marketplaces, or to write CLAUDE.md or AGENTS.md (that is writing-for-agents).
 ---
 
 # Writing skills
@@ -17,8 +17,8 @@ For the prose itself (leading words, pointers, pruning no-ops), also read the `w
 2. **Write three test prompts first**: two realistic requests that should trigger the skill and one near miss that should not. These are the acceptance criteria for every later step.
 3. **Choose the shape.** Decide invocation control, degree of freedom, and what goes in SKILL.md against what goes in reference files or scripts. The checklist sections "Invocation control" and "Body: instructions" give the defaults.
 4. **Draft the minimum** that closes the gap. Write the body first and the description last, so the description names what the body actually does. Put the skill where the target repo's CLAUDE.md says skills live. If it says nothing, ask: personal (`~/.claude/skills/`), project (`.claude/skills/`) or a plugin's `skills/`.
-5. **Review your own draft** with the review steps below. Fix every Broken and Costly finding before you show the user anything.
-6. **Test it.** Give a fresh subagent the SKILL.md path and each test prompt, with no other context, and compare its output with a run that has no skill. A trigger test needs a fresh session, because the subagent was told about the skill. Say which tests you ran and which the user must run.
+5. **Review your own draft** with review steps 2 to 4. Fix every Broken and Costly finding before you show the user anything.
+6. **Test it.** Give a fresh subagent the SKILL.md path and each test prompt to check the output. For the no-skill baseline and for trigger tests, use `claude plugin eval` (plugin skill) or a fresh session with the skill set to `"off"` in `skillOverrides`. A subagent in this session still sees the skill listing, so it cannot give a clean baseline. Say which tests you ran and which the user must run.
 7. **Report** with the table below. List any finding you chose not to fix, and the trigger tests still to run.
 
 ## Review a skill
@@ -29,7 +29,7 @@ For the prose itself (leading words, pointers, pruning no-ops), also read the `w
    | :- | :- |
    | `<dir>/SKILL.md` | That skill |
    | A `skills/` folder | Each skill in it, plus collection-level checks: name consistency, overlapping descriptions, total listing cost |
-   | A plugin (`.claude-plugin/plugin.json`) | Each skill under its `skills/` folder. Say that manifest, hooks and marketplace config are out of scope |
+   | A plugin (`.claude-plugin/plugin.json`) | Each skill under `skills/` and each file under `commands/`. Say that manifest, hooks and marketplace config are out of scope |
    | An installed skill, such as `foo@bar` | The cached copy under `~/.claude/plugins/cache/`. Say that fixes belong upstream, because the cache is overwritten on update |
 
    Read every file in the target before judging it: SKILL.md, reference files and scripts. A finding that a reference file would have answered is noise.
