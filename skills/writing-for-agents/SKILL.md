@@ -1,6 +1,6 @@
 ---
 name: writing-for-agents
-description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
+description: Writing documents for agents. Use when writing or editing AGENTS.md, CLAUDE.md or other agent-facing prose. For skill structure, frontmatter, triggering or review, use writing-skills.
 metadata:
   source: https://github.com/mattpocock/skills/tree/d1478fcb140db0b93c0c8df17bcfd311844749d0/skills/productivity/writing-for-agents
   upstream_sha: d1478fcb140db0b93c0c8df17bcfd311844749d0
