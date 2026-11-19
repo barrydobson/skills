@@ -1,6 +1,6 @@
 ---
 name: orc
-description: Builds one tracker ticket or GitHub issue into a Sol-reviewed PR through hc agents, and closes it after merge.
+description: Builds one tracker ticket or GitHub issue into a Codex-reviewed PR through hc agents, and closes it after merge.
 disable-model-invocation: true
 argument-hint: "[ticket-key] | --finish [ticket-key]"
 ---
@@ -9,7 +9,7 @@ argument-hint: "[ticket-key] | --finish [ticket-key]"
 
 Take ticket `$ARGUMENTS` from spec to an open PR. If `$ARGUMENTS` starts with `--finish`, the rest is the key: read `${CLAUDE_SKILL_DIR}/references/finish.md` and follow it instead of steps 0 to 10, with `${CLAUDE_SKILL_DIR}` as its `<skill dir>`. Hand each stage to an `hc` agent; do no repo work yourself until step 7. Run inside herdr-core (`$HC_TERMINAL_ID` set); otherwise stop and say why. First run `hc label $HC_TERMINAL_ID orch.role=head`.
 
-Needs `hc` (herdr-core), `claude`, `codex` (for the Sol reviewer), `gh`, `python3` (for `orc-ci`), and an issue tracker skill or CLI in this session.
+Needs `hc` (herdr-core), `claude`, `codex` (for the reviewer), `gh`, `python3` (for `orc-ci`), and an issue tracker skill or CLI in this session.
 
 The work always happens in the ticket's repo, never in this session's directory. Each agent runs with `--cwd` `<repo>` for spec, build and finish, and the worktree for review, and is labelled `orch.ticket=<key>` so it shows its ticket.
 
@@ -66,7 +66,7 @@ Send an agent a message with `${CLAUDE_SKILL_DIR}/scripts/orc-send <role> <key> 
 
    The reply starts `VERDICT:`. On `APPROVE`, go to step 6. On `CHANGES`, send the `build` agent the findings with `orc-send`. On its `built:` reply (apply step 4), send the `reviewer` `Round <r>.` followed by the builder's ledger and report, with `orc-send`. Stop after 3 rounds that end in `CHANGES`: show the user the open findings and stop.
 6. **Live writes.** Skip this step if the report's **Live writes** is none. Otherwise send the `build` agent, with `orc-send`, `live writes approved: <rollback directory>`, giving the absolute path of `$TMPDIR/orc-<n>/rollback/`. Apply step 4 to its reply. Writes that need the merge first, such as a deploy sync, are left for the user.
-7. **Ship.** In the worktree: commit everything with the repo's commit convention, push the branch with `-u`, keeping its name `worktree-<n>` because Finish finds the PR by it, and open the PR with the `barrydobson-skills:file-pr` skill. Its evidence is the build report's Proof, the live writes made, and the line `Reviewed with sol-loop: <rounds> rounds. Sol verdict: approved`. Then label your own terminal with the PR URL: `${CLAUDE_SKILL_DIR}/scripts/orc-label pr <pr url>`.
+7. **Ship.** In the worktree: commit everything with the repo's commit convention, push the branch with `-u`, keeping its name `worktree-<n>` because Finish finds the PR by it, and open the PR with the `barrydobson-skills:file-pr` skill. Its evidence is the build report's Proof, the live writes made, and the line `Reviewed by Codex: <rounds> rounds. Verdict: approved`. Then label your own terminal with the PR URL: `${CLAUDE_SKILL_DIR}/scripts/orc-label pr <pr url>`.
 8. **CI.** `${CLAUDE_SKILL_DIR}/scripts/orc-start ci <key> <worktree> <pr url>`, then `hc wait ci-<n>`; on `reason: timeout`, wait again. `orc-ci` waits until the base branch's required checks (or every check, when none is required) are green on the PR's head, and prints one result line. This terminal's exit is its result, not a failure. Read its output with `hc read ci-<n>`, then `orc-stop <key> ci`. Exit 0: go to step 9. Otherwise each failed check is a line with its link. Read the failure with `gh run view <run> --log-failed`, send it to the builder, then commit and push its fix yourself and watch again. After 2 failed fixes, report to the user and stop.
 9. **Ticket.** Write a comment to `$TMPDIR/orc-<n>-comment.md` and post it on the ticket with the tracker, from `<repo>`. It holds the PR link, the live writes made, anything left for the user after merge, follow-ups, and every finding the agents made that the ticket does not record, such as a premise that proved wrong. For rollback, list the path of each file in `$TMPDIR/orc-<n>/rollback/` and the commit the change started from (`base`, from step 5). Never post a rollback file's content: a copy of live state can hold secrets or customer data. Then move the ticket to review with the tracker, from `<repo>`.
 10. **End.** `orc-stop <key> build reviewer`. Give the user the PR link and anything left for them, and tell them to run `/barrydobson-skills:orc --finish <key>` once the PR has merged and that work is done.
