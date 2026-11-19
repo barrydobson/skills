@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""orc-ci: wait until a pull request's CI is green on its head, or fails.
+
+  orc-ci <PR URL> [--interval 20]
+
+Adapted from pr-wait in t3dotgg/tstack (MIT), `--until green` only:
+https://github.com/t3dotgg/tstack/blob/11e37a74d0a6868c121cd0910ab2b3bd9873b92a/skills/babysit-pr/scripts/pr-wait
+Review bots, comments, threads and base-branch moves are left out: orc reviews before the PR opens.
+
+The base branch's required checks gate; with none set, every check does. A required check
+that has not started counts as pending. Checks register a few seconds after a push, so green
+needs two identical polls in a row. With no required checks and no checks at all for three
+polls, the repo has no CI for this PR and that counts as green.
+
+Prints one result line. Exit codes:
+  0  green on the head (or no CI), or the PR merged
+  1  a gating check failed (one line each: name and link), the branch conflicts with its
+     base, the PR closed, or GitHub stayed unreachable
+  2  bad arguments or an unknown PR
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+import time
+from typing import Any, NoReturn
+
+MAX_FAILED_POLLS = 10
+NO_CI_POLLS = 3
+TRANSIENT = re.compile(
+    r"HTTP (5\d\d|429)|rate limit|timed? ?out|connection (reset|refused)|EOF|"
+    r"temporar|could not resolve host|TLS handshake|Something went wrong",
+    re.IGNORECASE,
+)
+FAILED = ("fail", "cancel")
+# gh pr checks buckets, worst first. Duplicate names (push and pull_request runs
+# of one job) collapse to the worst bucket.
+RANK = {"fail": 4, "cancel": 3, "pending": 2, "pass": 1, "skipping": 0}
+
+
+class GhError(Exception):
+    def __init__(self, message: str, transient: bool) -> None:
+        super().__init__(message)
+        self.transient = transient
+
+
+def log(message: str) -> None:
+    print(f"orc-ci: {message}", file=sys.stderr, flush=True)
+
+
+def done(code: int, *lines: str) -> NoReturn:
+    for line in lines:
+        print(line, flush=True)
+    sys.exit(code)
+
+
+def gh(args: list[str], allow: tuple[int, ...] = (0,)) -> subprocess.CompletedProcess[str]:
+    """Run gh. Retries transient failures (HTTP 5xx or 429, network) with backoff."""
+    delay = 2
+    for attempt in range(5):
+        proc = subprocess.run(["gh", *args], capture_output=True, text=True)
+        transient = proc.returncode != 0 and bool(TRANSIENT.search(proc.stderr))
+        if not transient and proc.returncode in allow:
+            return proc
+        lines = proc.stderr.strip().splitlines()
+        message = lines[-1] if lines else f"gh exited {proc.returncode}"
+        if not transient or attempt == 4:
+            raise GhError(message, transient)
+        log(f"gh {' '.join(args[:2])}: {message}; retry in {delay}s")
+        time.sleep(delay)
+        delay *= 2
+    raise AssertionError("unreachable")
+
+
+def required_checks(repo: str, base: str) -> set[str]:
+    """Required check names for the base branch, from rulesets and classic branch protection."""
+    sources = (
+        (
+            f"repos/{repo}/rules/branches/{base}",
+            '.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context',
+        ),
+        (f"repos/{repo}/branches/{base}/protection/required_status_checks", ".contexts[]?, .checks[]?.context"),
+    )
+    names: set[str] = set()
+    for path, jq in sources:
+        try:
+            names.update(line for line in gh(["api", path, "--jq", jq]).stdout.splitlines() if line)
+        except GhError as error:
+            if "HTTP 404" not in str(error):  # 404 means no protection, which is normal
+                log(f"could not read required checks from {path}: {error}")
+    return names
+
+
+def fetch_checks(url: str) -> dict[str, dict[str, Any]]:
+    # gh pr checks exits 8 while checks are pending and 1 when one failed: states, not errors.
+    proc = gh(["pr", "checks", url, "--json", "name,bucket,link"], allow=(0, 1, 8))
+    if not proc.stdout.strip():
+        if "no checks reported" in proc.stderr:
+            return {}
+        raise GhError(proc.stderr.strip() or f"gh pr checks exited {proc.returncode}", False)
+    checks: dict[str, dict[str, Any]] = {}
+    for row in json.loads(proc.stdout):
+        current = checks.get(row["name"])
+        if current is None or RANK.get(row["bucket"], 2) > RANK.get(current["bucket"], 2):
+            checks[row["name"]] = row
+    return checks
+
+
+def watch(url: str, repo: str, interval: int) -> NoReturn:
+    required: set[str] | None = None
+    prev: list[tuple[str, str]] | None = None
+    empty_polls = failures = 0
+    while True:
+        try:
+            pr = json.loads(gh(["pr", "view", url, "--json", "state,headRefOid,baseRefName,mergeStateStatus"]).stdout)
+            if pr["state"] == "MERGED":
+                done(0, f"merged: {url}")
+            if pr["state"] == "CLOSED":
+                done(1, f"closed without merging: {url}")
+            if pr["mergeStateStatus"] == "DIRTY":
+                done(1, f"merge state is DIRTY: the branch conflicts with {pr['baseRefName']}, rebase it")
+            if required is None:
+                required = required_checks(repo, pr["baseRefName"])
+                log(f"watching {url}; required checks: {', '.join(sorted(required)) or 'none set, so every check gates'}")
+            checks = fetch_checks(url)
+            failures = 0
+        except GhError as error:
+            if not error.transient:
+                done(1, f"orc-ci stopped: {error}")
+            failures += 1
+            log(f"poll failed ({failures}/{MAX_FAILED_POLLS}): {error}")
+            if failures >= MAX_FAILED_POLLS:
+                done(1, f"orc-ci stopped: GitHub unreachable for {failures} polls: {error}")
+            time.sleep(interval)
+            continue
+
+        short = pr["headRefOid"][:7]
+        gate = required or set(checks)
+
+        def bucket(name: str) -> str:
+            return checks[name]["bucket"] if name in checks else "pending"
+
+        fails = [f"check failed: {n} {checks[n]['link']}" for n in sorted(gate) if bucket(n) in FAILED]
+        if fails:
+            done(1, *fails)
+        snapshot = sorted((n, c["bucket"]) for n, c in checks.items())
+        stable, prev = snapshot == prev, snapshot
+        if gate and stable and all(bucket(n) != "pending" for n in gate):
+            green = sum(bucket(n) in ("pass", "skipping") for n in gate)
+            done(0, f"green on {short}: {green}/{len(gate)} {'required ' if required else ''}checks passed")
+        empty_polls = empty_polls + 1 if not gate else 0
+        if empty_polls >= NO_CI_POLLS:
+            done(0, f"green on {short}: no checks reported and none required")
+        time.sleep(interval)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(prog="orc-ci", description="Wait until a PR's CI is green or fails.")
+    parser.add_argument("pr", help="PR URL")
+    parser.add_argument("--interval", type=int, default=20, help="seconds between polls (default 20)")
+    args = parser.parse_args()
+    match = re.fullmatch(r"https://github\.com/([\w.-]+/[\w.-]+)/pull/\d+", args.pr.strip())
+    if not match:
+        done(2, f"orc-ci: '{args.pr}' is not a GitHub PR URL")
+    try:
+        gh(["pr", "view", args.pr, "--json", "number"])
+    except GhError as error:
+        if not error.transient:  # a transient failure is retried by the poll loop
+            done(2, f"orc-ci: cannot read {args.pr}: {error}")
+    watch(args.pr, match.group(1), max(args.interval, 0))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(130)
