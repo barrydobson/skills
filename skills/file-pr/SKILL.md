@@ -9,7 +9,7 @@ description: File a concise pull request with a problem-first body, evidence and
 
 1. Check whether a PR for this branch already exists (`gh pr view`). If it does, update it rather than opening another.
 2. Review the diff against the base branch (usually `origin/main`). Make sure it matches the goal and contains nothing unrelated.
-3. Find the ticket key (Jira, for example `PLAT-123`) from the branch name or conversation. If there is none, ask.
+3. Find the ticket key from the branch name or conversation. If there is none, ask.
 
 ## Title
 
