@@ -61,7 +61,7 @@ codex plugin add barrydobson-skills@barrydobson
 | [work-hc](skills/work-hc/) | Runs `/tote-issue-tracker:work`'s implementers and reviewers as `hc` terminals inside Herdr. |
 | [triage](skills/triage/) | `/triage` moves issues through triage roles and writes agent-ready briefs. |
 | [setup-matt-pocock-skills](skills/setup-matt-pocock-skills/) | `/setup-matt-pocock-skills` configures a repo's issue tracker, triage labels and domain docs for the planning skills. |
-| [sol-loop](skills/sol-loop/) | Reviews a working-tree change with GPT Sol in a loop until it approves, through herdr-core, Orca or a native subagent. |
+| [sol-loop](skills/sol-loop/) | Reviews a working-tree change with GPT Sol in a loop until it approves, through a route the user can watch or a native subagent. |
 | [find-docs](skills/find-docs/) | Fetches current library and API docs through Context7. Needs `npx` (runs `ctx7`). |
 | [officecli-pptx](skills/officecli-pptx/) | Reads, creates and edits `.pptx` decks. Needs `officecli`. |
 | [tavily-search](skills/tavily-search/) | Searches and reads the web with Tavily. Needs `tvly`. |
