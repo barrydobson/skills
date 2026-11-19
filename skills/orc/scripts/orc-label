@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Set the labels on an orc session's own terminal that a Herdr panel can read to show the run.
+# The keys keep their bob. and orch. names because an existing panel reads them.
+# Usage: orc-label phase <phase> [<ticket key>]   sets bob.phase and bob.at.<phase> (now, epoch seconds), clears bob.stopped;
+#                                                 with a key, also bob.ticket; phase spec also resets bob.round to 0
+#        orc-label stop "<reason>"                sets bob.stopped
+#        orc-label round <n>                      sets bob.round
+#        orc-label pr <PR URL>                    sets orch.pr
+# Phases must match the panel's phase list: an unknown one would show there as spec.
+set -euo pipefail
+
+PHASES=(spec build review ship ci ticket finish "done")
+me="${HC_TERMINAL_ID:?HC_TERMINAL_ID is not set: run orc inside herdr-core}"
+die() {
+  echo "orc-label: $*" >&2
+  exit 1
+}
+
+case "${1:-}" in
+  phase)
+    p="${2:-}"
+    [[ "$p" =~ ^[a-z]+$ && " ${PHASES[*]} " == *" $p "* ]] || die "unknown phase '$p': want one of ${PHASES[*]}"
+    labels=("bob.phase=$p" "bob.at.$p=$(date +%s)" "bob.stopped=")
+    [ -n "${3:-}" ] && labels+=("bob.ticket=$3")
+    [ "$p" = spec ] && labels+=("bob.round=0")
+    ;;
+  stop)
+    [ -n "${2:-}" ] || die 'usage: orc-label stop "<reason>"'
+    labels=("bob.stopped=$2")
+    ;;
+  round)
+    [[ "${2:-}" =~ ^[0-9]+$ ]] || die "round wants a number, got '${2:-}'"
+    labels=("bob.round=$2")
+    ;;
+  pr)
+    [[ "${2:-}" =~ ^https://github\.com/[^/]+/[^/]+/pull/[0-9]+$ ]] || die "pr wants a GitHub PR URL, got '${2:-}'"
+    labels=("orch.pr=$2")
+    ;;
+  *) die "usage: orc-label phase|stop|round|pr ..." ;;
+esac
+
+hc label "$me" "${labels[@]}" >/dev/null
