@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Create a ticket's run directory, private to this user, and print its absolute path.
+# Usage: orc-dir <ticket key>
+# The Write tool takes a literal path and does not expand $TMPDIR, so the head writes to the path this prints.
+# It lives under $TMPDIR, not /tmp, because specs and reports can describe security gaps.
+set -euo pipefail
+
+dir="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source-path=SCRIPTDIR source=orc-lib.sh
+. "$dir/orc-lib.sh"
+die() {
+  echo "orc-dir: $*" >&2
+  exit 1
+}
+
+[ $# -eq 1 ] && [ -n "$1" ] || die "usage: orc-dir <ticket key>"
+tmp="${TMPDIR:?TMPDIR is not set}"
+run="$(cd "$tmp" && pwd -P)/orc-$(orc_n "$1")"
+mkdir -p "$run/rollback"
+chmod 700 "$run"
+echo "$run"
