@@ -1,12 +1,12 @@
 ---
-name: sol-loop
-description: Use when the user says "sol loop".
+name: codex-review
+description: Use when the user says "codex review".
 metadata:
   source: https://github.com/t3dotgg/tstack/tree/6efae364201abc9d9f07443e9caa461f42e51090/skills/sol-loop
   upstream_sha: 6efae364201abc9d9f07443e9caa461f42e51090
 ---
 
-# sol-loop
+# codex-review
 
 This is a workflow for making your code changes more correct before (or
 sometimes after) filing a pull request. tl;dr - use OpenAI's GPT Sol to review

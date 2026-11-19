@@ -328,10 +328,10 @@ SOFTWARE.
 
 ## t3dotgg/tstack
 
-Skills: `sol-loop`.
+Skills: `codex-review` (upstream `sol-loop`).
 Source: <https://github.com/t3dotgg/tstack>
 
-Copyright (c) 2026 Theo Browne. Licensed under the MIT License. The full licence text ships with the skill in `skills/sol-loop/LICENSE`.
+Copyright (c) 2026 Theo Browne. Licensed under the MIT License. The full licence text ships with the skill in `skills/codex-review/LICENSE`.
 
 ## tstack (t3dotgg/tstack)
 
