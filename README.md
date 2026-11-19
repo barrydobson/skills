@@ -50,7 +50,6 @@ codex plugin add barrydobson-skills@barrydobson
 | [correct](skills/correct/) | `/correct` finds mistakes agents repeat in a repo and makes each one impossible. |
 | [blast-radius](skills/blast-radius/) | `/blast-radius` finds what a change could break outside the diff, and proves the fact it is safe because of. |
 | [unslop](skills/unslop/) | `/unslop` cuts AI tells from any writing. |
-| [work-hc](skills/work-hc/) | Runs `/tote-issue-tracker:work`'s implementers and reviewers as `hc` terminals inside Herdr. |
 | [sol-loop](skills/sol-loop/) | Reviews a working-tree change with GPT Sol in a loop until it approves, through a route the user can watch or a native subagent. |
 | [find-docs](skills/find-docs/) | Fetches current library and API docs through Context7. Needs `npx` (runs `ctx7`). |
 | [officecli-pptx](skills/officecli-pptx/) | Reads, creates and edits `.pptx` decks. Needs `officecli`. |
