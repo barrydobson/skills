@@ -16,16 +16,16 @@ export PATH="$tmp/bin:$PATH" HC_TERMINAL_ID=t9
 log() { cat "$tmp/hc.log"; }
 
 ./orc-label phase review
-[[ "$(log)" =~ ^label\|t9\|bob\.phase=review\|bob\.at\.review=[0-9]{10}\|bob\.stopped=\|$ ]] || fail "phase review: $(log)"
+[[ "$(log)" =~ ^label\|t9\|orc\.phase=review\|orc\.at\.review=[0-9]{10}\|orc\.stopped=\|$ ]] || fail "phase review: $(log)"
 
 ./orc-label phase spec ABC-12
-[[ "$(log)" =~ ^label\|t9\|bob\.phase=spec\|bob\.at\.spec=[0-9]+\|bob\.stopped=\|bob\.ticket=ABC-12\|bob\.round=0\|$ ]] || fail "phase spec with key: $(log)"
+[[ "$(log)" =~ ^label\|t9\|orc\.phase=spec\|orc\.at\.spec=[0-9]+\|orc\.stopped=\|orc\.ticket=ABC-12\|orc\.round=0\|$ ]] || fail "phase spec with key: $(log)"
 
 ./orc-label stop "AC4 waits on a scan"
-[ "$(log)" = "label|t9|bob.stopped=AC4 waits on a scan|" ] || fail "stop: $(log)"
+[ "$(log)" = "label|t9|orc.stopped=AC4 waits on a scan|" ] || fail "stop: $(log)"
 
 ./orc-label round 2
-[ "$(log)" = "label|t9|bob.round=2|" ] || fail "round: $(log)"
+[ "$(log)" = "label|t9|orc.round=2|" ] || fail "round: $(log)"
 
 ./orc-label pr https://github.com/example-org/example-repo/pull/42
 [ "$(log)" = "label|t9|orch.pr=https://github.com/example-org/example-repo/pull/42|" ] || fail "pr: $(log)"
