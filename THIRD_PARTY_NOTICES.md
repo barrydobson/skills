@@ -354,3 +354,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## t3dotgg/tstack
+
+Skills: `sol-loop` (adapted, not tracked against upstream).
+Source: <https://github.com/t3dotgg/tstack> (commit 11e37a7)
+
+Copyright (c) 2026 Theo Browne. Licensed under the MIT License. The full licence text ships with the skill in `skills/sol-loop/LICENSE`.
