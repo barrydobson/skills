@@ -47,20 +47,10 @@ codex plugin add barrydobson-skills@barrydobson
 | [be-ambitious](skills/be-ambitious/) | `/be-ambitious` makes a task or prompt more ambitious. |
 | [technical-docs](skills/technical-docs/) | `/technical-docs` writes reader-facing prose in Google developer documentation style, through the `technical-writer` agent. |
 | [theme-factory](skills/theme-factory/) | Applies a colour and font theme to visual output, including my Voltaic dark and light themes. |
-| [handoff](skills/handoff/) | `/handoff` compacts the conversation into a document another agent can pick up. |
-| [retro](skills/retro/) | `/retro` runs a retrospective on a coding session. |
-| [writing-for-agents](skills/writing-for-agents/) | How to write skills, `AGENTS.md` and `CLAUDE.md`. |
-| [diagnosing-bugs](skills/diagnosing-bugs/) | A diagnosis loop for hard bugs, CI failures and performance regressions. |
-| [wizard](skills/wizard/) | Generates a bash wizard that walks a human through steps only they can do. |
 | [correct](skills/correct/) | `/correct` finds mistakes agents repeat in a repo and makes each one impossible. |
 | [blast-radius](skills/blast-radius/) | `/blast-radius` finds what a change could break outside the diff, and proves the fact it is safe because of. |
 | [unslop](skills/unslop/) | `/unslop` cuts AI tells from any writing. |
-| [grilling](skills/grilling/) | Grills you about a plan, decision or idea until it holds up. |
-| [to-spec](skills/to-spec/) | `/to-spec` turns the conversation into a spec on the issue tracker. |
-| [to-tickets](skills/to-tickets/) | `/to-tickets` breaks a plan into tracer-bullet tickets, one repo each, with blocking edges. |
 | [work-hc](skills/work-hc/) | Runs `/tote-issue-tracker:work`'s implementers and reviewers as `hc` terminals inside Herdr. |
-| [triage](skills/triage/) | `/triage` moves issues through triage roles and writes agent-ready briefs. |
-| [setup-matt-pocock-skills](skills/setup-matt-pocock-skills/) | `/setup-matt-pocock-skills` configures a repo's issue tracker, triage labels and domain docs for the planning skills. |
 | [sol-loop](skills/sol-loop/) | Reviews a working-tree change with GPT Sol in a loop until it approves, through a route the user can watch or a native subagent. |
 | [find-docs](skills/find-docs/) | Fetches current library and API docs through Context7. Needs `npx` (runs `ctx7`). |
 | [officecli-pptx](skills/officecli-pptx/) | Reads, creates and edits `.pptx` decks. Needs `officecli`. |
