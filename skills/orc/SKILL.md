@@ -7,7 +7,7 @@ argument-hint: "[ticket-key] | --finish [ticket-key]"
 
 # orc
 
-Take ticket `$ARGUMENTS` from spec to an open PR. If `$ARGUMENTS` starts with `--finish`, the rest is the key: follow **Finish** at the end instead of steps 0 to 10. Hand each stage to an `hc` agent; do no repo work yourself until step 7. Run inside herdr-core (`$HC_TERMINAL_ID` set); otherwise stop and say why. First run `hc label $HC_TERMINAL_ID orch.role=head`.
+Take ticket `$ARGUMENTS` from spec to an open PR. If `$ARGUMENTS` starts with `--finish`, the rest is the key: read `${CLAUDE_SKILL_DIR}/references/finish.md` and follow it instead of steps 0 to 10, with `${CLAUDE_SKILL_DIR}` as its `<skill dir>`. Hand each stage to an `hc` agent; do no repo work yourself until step 7. Run inside herdr-core (`$HC_TERMINAL_ID` set); otherwise stop and say why. First run `hc label $HC_TERMINAL_ID orch.role=head`.
 
 Needs `hc` (herdr-core), `claude`, `codex` (for the Sol reviewer), `gh`, `python3` (for `orc-ci`), and an issue tracker skill or CLI in this session.
 
@@ -70,20 +70,3 @@ Send an agent a message with `${CLAUDE_SKILL_DIR}/scripts/orc-send <role> <key> 
 8. **CI.** `${CLAUDE_SKILL_DIR}/scripts/orc-start ci <key> <worktree> <pr url>`, then `hc wait ci-<n>`; on `reason: timeout`, wait again. `orc-ci` waits until the base branch's required checks (or every check, when none is required) are green on the PR's head, and prints one result line. This terminal's exit is its result, not a failure. Read its output with `hc read ci-<n>`, then `orc-stop <key> ci`. Exit 0: go to step 9. Otherwise each failed check is a line with its link. Read the failure with `gh run view <run> --log-failed`, send it to the builder, then commit and push its fix yourself and watch again. After 2 failed fixes, report to the user and stop.
 9. **Ticket.** Write a comment to `$TMPDIR/orc-<n>-comment.md` and post it on the ticket with the tracker, from `<repo>`. It holds the PR link, the live writes made, anything left for the user after merge, follow-ups, and every finding the agents made that the ticket does not record, such as a premise that proved wrong. For rollback, list the path of each file in `$TMPDIR/orc-<n>/rollback/` and the commit the change started from (`base`, from step 5). Never post a rollback file's content: a copy of live state can hold secrets or customer data. Then move the ticket to review with the tracker, from `<repo>`.
 10. **End.** `orc-stop <key> build reviewer`. Give the user the PR link and anything left for them, and tell them to run `/barrydobson-skills:orc --finish <key>` once the PR has merged and that work is done.
-
-## Finish
-
-`/barrydobson-skills:orc --finish <key>` closes the ticket once its PR has merged. The user starts it after the post-merge work step 9's comment left them, by typing it or from a Herdr panel, if one reads these labels. It works in a new session too.
-
-F1. **Repo.** Find `<repo>` as step 0 does, with `<key>` in place of `$ARGUMENTS`, and set `<n>`. Run `${CLAUDE_SKILL_DIR}/scripts/orc-label phase finish <key>`.
-F2. **PR.** Run `${CLAUDE_SKILL_DIR}/scripts/orc-pr <key> <owner/repo>`. It finds the PR on the build agent's branch, `worktree-<n>`, prints `<state> <pr url>` and labels your terminal. Exit 0: it merged; go on. Exit 1: not merged; tell the user and stop. Exit 2: no PR on that branch; tell the user and stop.
-F3. **Checks.** Take what step 9's comment left for the user after merge; read the ticket with the tracker if this session did not post it. Turn each item that can be checked into a read-only check, such as "the old admission policy is gone from the staging cluster". Write the task to `$TMPDIR/orc-<n>-finish.md`:
-
-    ```
-    <key>
-    Worktree: <repo>/.claude/worktrees/<n> Branch: worktree-<n>
-    Post-merge checks: <the checks, or none>
-    Tracker: the issue tracker's finish skill
-    ```
-F4. **Run.** Start the `finish` agent with `<repo>` as its cwd and the task in `$TMPDIR/orc-<n>-finish.md`; `orc-start` removes a `finish-<n>` terminal left from a stopped finish. It runs the checks, then the tracker's finish skill, and replies `finished: <key> done` or `finished: <key> skipped: <why>`.
-F5. **End.** On `done`: `orc-stop <key> finish`, run `${CLAUDE_SKILL_DIR}/scripts/orc-label phase done`, and give the user the report. On `skipped:`: run `${CLAUDE_SKILL_DIR}/scripts/orc-label stop "<why in a few words>"`, show the user the report and stop. The agent stays running so the user can take over.
