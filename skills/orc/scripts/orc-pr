@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Find a ticket's orc PR by its branch, and label the head with the result.
+# Usage: orc-pr <ticket key> <owner/repo>
+# The build agent's worktree, from `claude --worktree <n>`, is on branch worktree-<n>, so the branch finds
+# the PR whatever its title says. A merged PR wins over an open or closed one on the same branch.
+# Prints "<state> <PR URL>". Exit 0: merged, and sets orch.pr. Exit 1: not merged, and sets orc.stopped.
+# Exit 2: bad arguments, or no PR on the branch.
+set -euo pipefail
+
+dir="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source-path=SCRIPTDIR source=orc-lib.sh
+. "$dir/orc-lib.sh"
+die() {
+  echo "orc-pr: $*" >&2
+  exit 2
+}
+
+[ $# -eq 2 ] || die "usage: orc-pr <ticket key> <owner/repo>"
+key="$1" repo="$2"
+[ -n "$key" ] || die "empty ticket key"
+[[ "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || die "'$repo' is not owner/repo"
+branch="worktree-$(orc_n "$key")"
+
+line="$(gh pr list -R "$repo" --head "$branch" --state all --json state,url \
+  --jq '(map(select(.state == "MERGED")) + .) | first // empty | "\(.state) \(.url)"')"
+[ -n "$line" ] || die "no PR on branch $branch in $repo"
+echo "$line"
+
+if [ "${line%% *}" = MERGED ]; then
+  "$dir/orc-label" pr "${line#* }"
+else
+  "$dir/orc-label" stop "PR not merged"
+  exit 1
+fi
