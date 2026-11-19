@@ -60,25 +60,11 @@ Send an agent a message with `${CLAUDE_SKILL_DIR}/scripts/orc-send <role> <key> 
 
    Start the `build` agent with `<repo>` as its cwd, the model, and the task in `$TMPDIR/orc-<n>-build.md`. Its name, `<n>`, is the worktree name. Once it is running, stop the spec agent: `orc-stop <key> spec`. The agent replies `built: <key> <worktree path>`.
 4. **Gate.** On `blocked:`, or a report whose Proof says a check failed, show the user the issue and stop. Agents stay running so the user can take over.
-5. **Review.** In the worktree, run `git fetch origin -q` and set `base` to `git merge-base HEAD origin/<default branch>`. Write the brief to `$TMPDIR/orc-<n>-brief.md` as follows:
-
-   ```
-   Review only. Do not edit, commit, push, comment on PRs, or start subagents.
-   Repo: <repo> Base: <base> Intent: <spec Goal> Out of scope: <spec Out of scope> Checks: <the build report's Proof>
-   See: git diff <base>; git status --short (read untracked).
-   Read surrounding code. Find bugs, broken callers, mismatch with intent.
-   Skip style unless it hides a bug. Hold to the smallest change. Flag code,
-   tests, or guards the intent does not need. Other paths, rare cases, small
-   perf, extra compat: nits.
-   blocker = intended case wrong. should = real bug callers will hit, in intent. nit = rest.
-   Reply:
-   VERDICT: APPROVE or CHANGES
-   S1 [blocker|should|nit] <file>:<line> <claim>. Fix: <suggestion> (stable ids)
-   ```
+5. **Review.** In the worktree, run `git fetch origin -q` and set `base` to `git merge-base HEAD origin/<default branch>`. Write the brief to `$TMPDIR/orc-<n>-brief.md`, one field per line: `Repo: <repo>`, `Base: <base>`, `Intent: <spec Goal>`, `Out of scope: <spec Out of scope>`, `Checks: <the build report's Proof>`. The reviewer's prompt holds the review rules and reply format.
 
    In round 1, start one `reviewer` agent for all rounds, with the worktree as its cwd and the task in `$TMPDIR/orc-<n>-brief.md`; it is named `sol-<n>`. Before rounds 2 and 3, run `${CLAUDE_SKILL_DIR}/scripts/orc-label round <r>`.
 
-   The reply starts `VERDICT:`. On `APPROVE`, go to step 6. On `CHANGES`, send the `build` agent `Fix these review findings and prove each fix. For each finding id, reply fixed:, disagree: or declined: with evidence, then report as before.` followed by the findings, with `orc-send`. On its `built:` reply (apply step 4), send the `reviewer` `Round <r>. Same base. Check open ids and changed code only; mark each old id resolved or still open: <reason>.` followed by the builder's ledger and report, with `orc-send`. Stop after 3 rounds that end in `CHANGES`: show the user the open findings and stop.
+   The reply starts `VERDICT:`. On `APPROVE`, go to step 6. On `CHANGES`, send the `build` agent `Fix these review findings and prove each fix. For each finding id, reply fixed:, disagree: or declined: with evidence, then report as before.` followed by the findings, with `orc-send`. On its `built:` reply (apply step 4), send the `reviewer` `Round <r>.` followed by the builder's ledger and report, with `orc-send`. Stop after 3 rounds that end in `CHANGES`: show the user the open findings and stop.
 6. **Live writes.** Skip this step if the report lists none. Otherwise send the `build` agent, with `orc-send`: `Review approved. You are authorised to make the live writes you listed that can run before merge; make them now. Before each one, save what it changes or deletes to $TMPDIR/orc-<n>/rollback/. Report as before.` Apply step 4 to its reply. Writes that need the merge first, such as a deploy sync, are left for the user.
 7. **Ship.** In the worktree: commit everything with the repo's commit convention, push the branch with `-u`, keeping its name `worktree-<n>` because Finish finds the PR by it, and open the PR with the `barrydobson-skills:file-pr` skill. Its evidence is the build report's Proof, the live writes made, and the line `Reviewed with sol-loop: <rounds> rounds. Sol verdict: approved`. Then label your own terminal with the PR URL: `${CLAUDE_SKILL_DIR}/scripts/orc-label pr <pr url>`.
 8. **CI.** `${CLAUDE_SKILL_DIR}/scripts/orc-start ci <key> <worktree> <pr url>`, then `hc wait ci-<n>`; on `reason: timeout`, wait again. `orc-ci` waits until the base branch's required checks (or every check, when none is required) are green on the PR's head, and prints one result line. This terminal's exit is its result, not a failure. Read its output with `hc read ci-<n>`, then `orc-stop <key> ci`. Exit 0: go to step 9. Otherwise each failed check is a line with its link. Read the failure with `gh run view <run> --log-failed`, send it to the builder, then commit and push its fix yourself and watch again. After 2 failed fixes, report to the user and stop.
