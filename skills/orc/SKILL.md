@@ -23,7 +23,7 @@ Run every tracker write from `<repo>`, as `cd <repo> && ...`. A tracker can read
 
 Set `<n>` to the ticket key in lower case with every character outside `a-z0-9-` turned into `-`, such as `abc-123` or `acme-widgets-12`. It names the worktree and every agent; write it out in full in each command, because shell variables do not persist between Bash calls.
 
-Start every agent with `hc run --bg`. After you start or message an agent, end your turn: its reply arrives as your next input, as an `<hc from=...>` message. Any other input is from the user. If hc reports that an agent exited, errored or is blocked without replying, it has failed: read its screen with `hc read`, report, and stop.
+Start every agent with `hc run --bg`. After you start or message an agent, end your turn: its reply arrives as your next input, as an `<hc from=...>` message. Any other input is from the user. If hc reports that an agent exited, errored or is blocked without replying, it has failed: read its screen with `hc read`, report, and stop. If its turn ended without the message its step expects, it has likely forgotten to send: read its screen and, if the reply is there, send it once `You ended your turn without replying. Send that reply to your parent now with hc send.` If the next turn also ends without it, it has failed.
 
 Label your own terminal, always with `${CLAUDE_SKILL_DIR}/scripts/orc-label`, written out in full: it sets the labels a Herdr panel can read to show the run, and rejects a wrong phase. Before step 1, run `${CLAUDE_SKILL_DIR}/scripts/orc-label phase spec <key>`. As each later step starts, run `${CLAUDE_SKILL_DIR}/scripts/orc-label phase <phase>`: `build` at step 3, `review` at 5, `ship` at 7, `ci` at 8, `ticket` at 9, and `finish` after step 10, so a panel shows the ticket waits on merge and `/barrydobson-skills:orc --finish`. Each also records when the stage started and clears a stop. Whenever you stop for the user, first run `${CLAUDE_SKILL_DIR}/scripts/orc-label stop "<reason in a few words>"`.
 
@@ -39,10 +39,10 @@ Each agent gets a prompt from `${CLAUDE_SKILL_DIR}/prompts/` followed by its tas
 Parent: hc send <you>
 ```
 
-Then start the agent with the prompt and the task joined by one `cat`:
+Then start the agent with the prompt and the task joined by one `cat`, inside the `<hc from=... reach=...>` tag that an `hc run <template>` launch would add. The herdr-core skill in each agent tells it to report to the `reach` address; without the tag, agents finish in their own terminal and never reply:
 
 ```sh
-hc run --bg --name <name> --label orch.ticket=<key> --cwd <dir> -- "$SHELL" -ic '<command> "$@"' orc "$(cat ${CLAUDE_SKILL_DIR}/prompts/<prompt>.md $TMPDIR/orc-<n>-<step>.md)"
+hc run --bg --name <name> --label orch.ticket=<key> --cwd <dir> -- "$SHELL" -ic '<command> "$@"' orc "$(echo "<hc from=\"$HC_TERMINAL_ID head\" reach=\"hc send $HC_TERMINAL_ID when done or stuck\">"; cat ${CLAUDE_SKILL_DIR}/prompts/<prompt>.md $TMPDIR/orc-<n>-<step>.md; echo '</hc>')"
 ```
 
 | Agent | `<prompt>` | `<command>` |
