@@ -29,7 +29,7 @@ skill listing and be liable to trigger on its own.
 
 Add `skills/<skill-name>/SKILL.md`. Claude Code discovers it from the `skills/` directory, so no manifest change is needed.
 
-A skill tied to one machine, a local binary or the Obsidian vault belongs in dotfiles as a user skill. So does anything that names Tote internals, because this repo is public.
+A skill may need a CLI that any machine can install, such as `tvly` or `codex`; say so in the skill. A skill tied to one machine's files or the Obsidian vault belongs in dotfiles as a user skill. So does anything that names Tote internals, because this repo is public.
 
 ### Vendored skills
 
