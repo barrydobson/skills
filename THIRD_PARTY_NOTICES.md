@@ -357,7 +357,7 @@ SOFTWARE.
 
 ## t3dotgg/tstack
 
-Skills: `sol-loop` (adapted, not tracked against upstream).
-Source: <https://github.com/t3dotgg/tstack> (commit 11e37a7)
+Skills: `sol-loop`.
+Source: <https://github.com/t3dotgg/tstack>
 
 Copyright (c) 2026 Theo Browne. Licensed under the MIT License. The full licence text ships with the skill in `skills/sol-loop/LICENSE`.

@@ -1,19 +1,30 @@
 ---
 name: sol-loop
-description: Review a working-tree change with GPT Sol in a loop until it approves. Use when the user says "sol loop".
+description: Use when the user says "sol loop".
+metadata:
+  source: https://github.com/t3dotgg/tstack/tree/6efae364201abc9d9f07443e9caa461f42e51090/skills/sol-loop
+  upstream_sha: 6efae364201abc9d9f07443e9caa461f42e51090
 ---
 
 # sol-loop
 
-Hold every fix to the smallest change; push back on findings you can show are
-wrong.
+This is a workflow for making your code changes more correct before (or
+sometimes after) filing a pull request. tl;dr - use OpenAI's GPT Sol to review
+your code in a loop.
+
+Make the most minimal possible changes to appease the Sol reviewers. Be careful
+of scope creep and don't be scared to push back.
 
 ## Budget
 
-- Default: 3 rounds total.
+- Default: 3 rounds total. Round 1 is full. Later rounds check only
+  changed code and open findings.
 - Extend to 5 only for security, permissions, auth, data loss, or
   state/concurrency, while a blocker or should stays open with evidence. Or when
   the user asks.
+- Stop early if a round returns only nits. Declined nits and comment,
+  doc, or format-only fixes need no new round.
+- One reviewer only. Sol must not start subagents or reviewers.
 - Keep a ledger: id, severity, outcome, usage if returned. Never guess it.
 
 ## 1. Scope
@@ -37,34 +48,36 @@ missing or pre-failing checks in the brief.
 
 ## 2. Start Sol
 
-Read the one adapter for where you run. It says how to start, follow up,
-wait for and end the reviewer, and its reply channel.
+In T3, call `orchestrator_capabilities`. Pick the latest Sol unless the user
+named a version. Do not hardcode an ID. Record provider, model, and effort
+only if exposed. Use `delegate_task` every round (`role: "review"`,
+`mode: "async"`). Save `taskId`. New `clientRequestId` per round.
+`childThreadId` is storage, not the next target. Do not use
+`t3_thread_send`, `create_threads`, or `t3_thread_launch` for review.
 
-- `$HC_TERMINAL_ID` is set: [`adapters/herdr-core.md`](adapters/herdr-core.md).
-- `orca worktree current --json` (`orca-ide` on Linux) succeeds:
-  [`adapters/orca.md`](adapters/orca.md).
-- Neither: use a native Sol subagent and keep its ID; its final message is
-  the reply channel. In Claude Code, use a custom subagent only if it is set
-  up to run Sol. If no route runs Sol, report the blocker.
+If T3 tools are not listed, try one direct capability call. Outside T3, use
+a native Sol subagent and keep its ID. In Claude Code, use a custom subagent
+only if it is set up to run Sol. If no route runs Sol, report the blocker. Do
+not substitute a model.
 
-In every harness:
+Do not edit scoped files while review runs. Wait for the notice. Do not
+poll or start a second reviewer. Timeout, error, or no reply is not
+approval. On failure, cancel, verify stop, restart with the ledger.
 
-- One reviewer for the whole loop: async, read-only, and followed up by its
-  saved ID.
-- Pick the latest Sol unless the user named a version. Do not hardcode an
-  ID. If the reviewer is not Sol, report the blocker. Do not substitute a
-  model. Record provider, model, and effort only if exposed.
-- Do not edit scoped files while review runs. Wait for the reply; do not
-  poll. Timeout, error, exit, or no reply is not approval. On failure,
-  cancel, verify stop, restart with the ledger.
-
-Round 1 brief (the reviewer gets no history beyond it):
+Round 1 brief (T3 children get no history):
 
 ```
-Review only, per ${CLAUDE_SKILL_DIR}/reviewer.md. Reply via: <adapter's reply channel>.
-Repo: <repo> Base: <sha> Paths: <paths or "all">
-Intent: <intent> Out of scope: <scope> Checks: <results>
+Review only. Do not edit, commit, push, comment on PRs, or start subagents.
+Repo: <abs path> Base: <sha> Intent: <intent> Out of scope: <scope> Checks: <results>
 See: git diff <base> [-- <paths>]; git status --short (read untracked).
+Read surrounding code. Find bugs, broken callers, mismatch with intent.
+Skip style unless it hides a bug. Hold to the smallest change. Flag code,
+tests, or guards the intent does not need. Other paths, rare cases, small
+perf, extra compat: nits.
+blocker = intended case wrong. should = real bug callers will hit, in intent. nit = rest.
+Reply:
+VERDICT: APPROVE or CHANGES
+S1 [blocker|should|nit] <file>:<line> <claim>. Fix: <suggestion> (stable ids)
 ```
 
 ## 3. Answer findings
@@ -83,25 +96,19 @@ review grew the diff, cut first. Do not agree just to end the loop.
 
 ## 4. Next round
 
-Follow up the saved reviewer ID through the adapter. Send the round 1 brief,
+Start one only if budget remains and a blocker or should is open, behavior code
+changed, or approval does not cover the current behavior diff. Use a fresh
+`delegate_task` in T3, or follow up the saved native ID. Send the round 1 brief,
 the ledger (`fixed:` / `disagree:` / `declined:` + evidence), the same base
-diff, and the change since last round. If the reviewer is gone, start a new
-one with the ledger.
+diff, and the change since last round. Tell Sol: open ids and changed code only.
+Mark each old id `resolved` or `still open: <reason>`.
 
 ## 5. Stop and ship
 
-After each round, decide:
-
-- **Next round:** budget remains and a blocker or should is open, behavior
-  code changed, or approval does not cover the current behavior diff.
-- **Stop early:** the round returned only nits. Declined nits and comment,
-  doc, or format-only fixes need no new round.
-- **Agreed:** APPROVE on the current behavior diff, no blocker or should
-  open, no concern of your own.
-- **Stuck:** an item stays disputed after two replies, or budget ends. Show
-  both sides in 2-3 lines each. The user decides. Budget end is not approval.
-
-End the reviewer through the adapter once the loop stops.
+Agreed: APPROVE on the current behavior diff, no blocker or should open,
+no concern of your own. Stuck: an item stays disputed after two replies,
+or budget ends. Show both sides in 2-3 lines each. The user decides.
+Budget end is not approval.
 
 Do not push during the loop. Push after agreement only if the user asked
 to push, ship, or update the PR. If you push to a PR, add above the model
