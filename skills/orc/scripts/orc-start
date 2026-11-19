@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# Start one orc agent, or the CI watcher, as an hc terminal and set the head's phase label.
+# Usage: orc-start <role> <ticket key> <cwd> [<model>] < task-body
+#        orc-start ci <ticket key> <worktree> <PR URL>
+#   role: spec | build | reviewer | finish; build also takes a model: haiku | sonnet | opus
+#   The task body comes on stdin, so agent-written text never passes through a shell argument.
+#   ci runs orc-ci on the PR and takes no stdin; its exit code is the CI result.
+# The agent's first message is its prompt, the task header and the body, inside the <hc from reach> tag
+# that an hc template launch adds: the herdr-core skill in the agent only reports back when it sees that tag.
+# A live terminal left with the same name, from a stopped run, is killed and removed first.
+set -euo pipefail
+
+me="${HC_TERMINAL_ID:?HC_TERMINAL_ID is not set: run orc inside herdr-core}"
+shell="${SHELL:?SHELL is not set}"
+dir="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source-path=SCRIPTDIR source=orc-lib.sh
+. "$dir/orc-lib.sh"
+die() {
+  echo "orc-start: $*" >&2
+  exit 1
+}
+
+[ $# -ge 3 ] || die "usage: orc-start <role> <ticket key> <cwd> [<model> | <PR URL>] < task-body"
+role="$1" key="$2" cwd="$3" extra="${4:-}"
+[ -n "$key" ] || die "empty ticket key"
+[ -d "$cwd" ] || die "no such directory: $cwd"
+n="$(orc_n "$key")"
+name="$(orc_name "$role" "$key")" || die "unknown role '$role': want spec, build, reviewer, ci or finish"
+
+case "$role" in
+  spec | finish)
+    cmd='exec claude --permission-mode auto'
+    ;;
+  build)
+    [[ "$extra" =~ ^(haiku|sonnet|opus)$ ]] || die "build wants a model: haiku, sonnet or opus, got '$extra'"
+    cmd="exec claude --worktree $n --permission-mode auto --model $extra"
+    ;;
+  reviewer)
+    # The $(...) runs in the agent's shell, in the worktree, and trusts the repo's main checkout.
+    # shellcheck disable=SC2016
+    cmd='exec codex --no-daemon -a never -c default_permissions=\"reviewer\" -c permissions.reviewer.extends=\":read-only\" -c permissions.reviewer.network.enabled=true -c check_for_update_on_startup=false -c projects.$(dirname $(git rev-parse --path-format=absolute --git-common-dir)).trust_level=trusted'
+    ;;
+  ci)
+    [[ "$extra" =~ ^https://github\.com/[^/]+/[^/]+/pull/[0-9]+$ ]] || die "ci wants a GitHub PR URL, got '$extra'"
+    ;;
+esac
+case "$role" in build | ci) ;; *) [ -z "$extra" ] || die "$role takes no fourth argument" ;; esac
+
+if [ "$role" = ci ]; then
+  orc_remove "$name"
+  hc run --bg --name "$name" --label "orch.ticket=$key" --cwd "$cwd" -- "$dir/orc-ci" "$extra"
+  "$dir/orc-label" phase ci
+  exit 0
+fi
+
+body="$(cat)"
+[ -n "$body" ] || die "empty task body on stdin"
+
+prompt="$role"
+msg="<hc from=\"$me head\" reach=\"hc send $me when done or stuck\">
+$(cat "$dir/../prompts/$prompt.md")
+
+## Task
+
+Parent: hc send $me
+
+$body
+</hc>"
+
+orc_remove "$name"
+
+# "$SHELL" -ic loads the user's profile, which hc's own environment lacks; the message reaches the agent as "$@".
+hc run --bg --name "$name" --label "orch.ticket=$key" --cwd "$cwd" -- "$shell" -ic "$cmd \"\$@\"" orc "$msg"
+
+case "$role" in
+  spec) "$dir/orc-label" phase spec "$key" ;;
+  build) "$dir/orc-label" phase build ;;
+  reviewer) "$dir/orc-label" phase review && "$dir/orc-label" round 1 ;;
+  finish) ;; # F1 already set phase finish, before the PR check can stop the run
+esac

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Kill and remove a ticket's orc terminals; a missing one is skipped.
+# Usage: orc-stop <ticket key> [<role>...]
+#   role: spec | build | reviewer | ci | finish; with none, every role.
+set -euo pipefail
+
+dir="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source-path=SCRIPTDIR source=orc-lib.sh
+. "$dir/orc-lib.sh"
+die() {
+  echo "orc-stop: $*" >&2
+  exit 1
+}
+
+[ $# -ge 1 ] || die "usage: orc-stop <ticket key> [<role>...]"
+key="$1"
+shift
+[ -n "$key" ] || die "empty ticket key"
+[ $# -gt 0 ] || set -- "${ORC_ROLES[@]}"
+names=()
+for role in "$@"; do
+  name="$(orc_name "$role" "$key")" || die "unknown role '$role': want ${ORC_ROLES[*]}"
+  names+=("$name")
+done
+for name in "${names[@]}"; do orc_remove "$name"; done

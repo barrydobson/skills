@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Send a message to one orc agent.
+# Usage: orc-send <role> <ticket key> < message
+#   role: spec | build | reviewer | finish
+#   The message comes on stdin, so agent-written text never passes through a shell argument.
+set -euo pipefail
+
+dir="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source-path=SCRIPTDIR source=orc-lib.sh
+. "$dir/orc-lib.sh"
+die() {
+  echo "orc-send: $*" >&2
+  exit 1
+}
+
+[ $# -eq 2 ] || die "usage: orc-send <role> <ticket key> < message"
+[ -n "$2" ] || die "empty ticket key"
+[ "$1" != ci ] || die "ci is a watcher, not an agent: it takes no messages"
+name="$(orc_name "$1" "$2")" || die "unknown role '$1': want spec, build, reviewer or finish"
+msg="$(cat)"
+[ -n "$msg" ] || die "empty message on stdin"
+hc send "$name" "$msg"
