@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Create a ticket's run directory, private to this user, and print its absolute path.
+# Usage: flow-dir <ticket key>
+# The Write tool takes a literal path and does not expand $TMPDIR, so the head writes to the path this prints.
+# It lives under $TMPDIR, not /tmp, because specs and reports can describe security gaps.
+set -euo pipefail
+
+die() {
+  echo "flow-dir: $*" >&2
+  exit 1
+}
+
+[ $# -eq 1 ] && [ -n "$1" ] || die "usage: flow-dir <ticket key>"
+tmp="${TMPDIR:?TMPDIR is not set}"
+n="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')"
+run="$(cd "$tmp" && pwd -P)/flow-$n"
+mkdir -p "$run"
+chmod 700 "$run"
+echo "$run"
