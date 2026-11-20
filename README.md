@@ -52,7 +52,7 @@ codex plugin add barrydobson-skills@barrydobson
 | [unslop](skills/unslop/) | `/unslop` cuts AI tells from any writing. |
 | [codex-review](skills/codex-review/) | Reviews a working-tree change with GPT Sol in a loop until it approves, through a route the user can watch or a native subagent. |
 | [orc](skills/orc/) | `/orc` takes one ticket to a Codex-reviewed PR through `hc` agents, and `/orc --finish` closes it after merge. Needs herdr-core, `claude`, `codex` and `gh`. |
-| [flow](skills/flow/) | `/flow` takes the ticket linked to an Orca workspace to a Codex-reviewed PR through Orca orchestration workers, `/flow --launch <key>...` creates those workspaces from any session, and `/flow --finish` closes a ticket after merge. Needs Orca, `claude`, `codex` and `gh`. |
+| [flow](skills/flow/) | `/flow` takes the ticket linked to an Orca workspace to a Codex-reviewed PR through Orca orchestration workers, and `/flow --finish` closes it after merge. Needs Orca, `claude`, `codex` and `gh`. |
 | [find-docs](skills/find-docs/) | Fetches current library and API docs through Context7. Needs `npx` (runs `ctx7`). |
 | [officecli-pptx](skills/officecli-pptx/) | Reads, creates and edits `.pptx` decks. Needs `officecli`. |
 | [tavily-search](skills/tavily-search/) | Searches and reads the web with Tavily. Needs `tvly`. |
