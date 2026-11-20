@@ -2,14 +2,14 @@
 name: flow
 description: Builds the tracker ticket or GitHub issue linked to the current Orca workspace into a Codex-reviewed PR through Orca orchestration workers, and closes it after merge.
 disable-model-invocation: true
-argument-hint: "[ticket-key] | --finish [ticket-key]"
+argument-hint: "[ticket-key] | --finish [ticket-key] | --launch <ticket-key>..."
 ---
 
 # flow
 
-Take the ticket linked to this Orca workspace from spec to an open PR. If `$ARGUMENTS` starts with `--finish`, follow **Finish** instead of steps 0 to 6. Hand spec, build and review to Orca workers; do no repo work yourself until step 5.
+Take the ticket linked to this Orca workspace from spec to an open PR. If `$ARGUMENTS` starts with `--finish`, follow **Finish** instead of steps 0 to 6; if it starts with `--launch`, follow **Launch**. Hand spec, build and review to Orca workers; do no repo work yourself until step 5.
 
-The human starts flow from Orca's Tasks view: they create a workspace from the ticket, which links the ticket to it, and launch Claude there with the prompt `/barrydobson-skills:flow`. A Quick Command can hold that prompt, and `/barrydobson-skills:flow --finish`, for a workspace that already exists.
+The human starts flow from Orca's Tasks view: they create a workspace from the ticket, which links the ticket to it, and launch Claude there with the prompt `/barrydobson-skills:flow`. A Quick Command can hold that prompt, and `/barrydobson-skills:flow --finish`, for a workspace that already exists. From any other session, `/barrydobson-skills:flow --launch <key>...` creates those workspaces itself, so the human need not pick each repo.
 
 Needs the Orca desktop app or server running, the `orca`, `claude`, `codex` and `gh` CLIs, and an issue tracker skill or CLI in this session. Workers launch with Orca's own **Agent Permissions** setting; on work repos it must not be Yolo.
 
@@ -59,6 +59,28 @@ Whenever you stop for the user, first record the reason where Orca's sidebar sho
 6. **Ticket.** Write a comment to `<dir>/comment.md` under the heading `## flow: PR open` and post it on the ticket. It holds the PR link, the commit the change started from (`base`), anything left for the user after merge, follow-ups, and every finding the agents made that the ticket does not record, such as a premise that proved wrong. Move the ticket to review. Run `orca orchestration worker-release --dispatch <id>` for the builder and the reviewer, then `orca worktree set --worktree current --comment "flow: PR open, waiting on merge"`.
 
    Give the user the PR link and anything left for them. CI is theirs: the PR pane shows the checks, and **Fix broken checks** hands a failure to an agent. Once the PR has merged, they run `/barrydobson-skills:flow --finish` in this workspace.
+
+## Launch
+
+`/barrydobson-skills:flow --launch <key>...` creates a workspace for each ticket in its own repo and starts a flow head there, then ends. It runs from any session, such as a home repo whose project instructions say how to pick and locate repos; it changes nothing in the session's own repo. Skip **Before you start**: this session starts no workers.
+
+For each key, in turn:
+
+L1. **Repo.** Read the ticket with the tracker, from this session, since the repo is not known yet, and take the target repo from it. If this session's project instructions say how to pick and locate a repo, follow them. Otherwise:
+    - GitHub issue: the repo the issue belongs to, `owner/repo` in its key or URL.
+    - Tracker ticket: its single component, as `org/repo`. With none or several, or one that names no org, ask the user.
+
+    Find the clone at `~/_git/<org lower-cased>/<repo>`. If it is missing, check the current name with `gh repo view <org>/<repo> --json nameWithOwner`, because GitHub redirects a renamed repo, then `gh repo clone <org>/<repo> ~/_git/<org lower-cased>/<repo>`, using the current name for the folder. `<repo>` below is the clone's absolute path.
+L2. **Register.** Find `<repo>` by its `path` in `orca repo list --json` and take its `id`. If it is not there, add it, so Orca registers only the repos tickets use: `orca repo add --path <repo> --json`, and take the `id` from its output.
+L3. **Workspace.** Set `<n>` to the key in lower case with every character outside `a-z0-9-` turned into `-`. Run:
+
+    ```sh
+    orca worktree create --repo id:<id> --name <n> --no-parent --reference <key or issue URL> --agent claude --prompt "/barrydobson-skills:flow" --json
+    ```
+
+    GitHub issues need the full URL for `--reference`. The workspace is linked to the ticket, so its head finds the key as step 0 says. If the command fails, report it for this key and go on to the next: never rerun it as a fresh create, because a lost reply may have started the agent (the error gives a `--retry-launch` id instead).
+
+Then report one line per key: the key, the repo, the workspace name, and whether its head started or why not. Tell the user a newly added repo appears outside any project group until they move it, and that `orca repo hide`, or removing it in Orca, drops a repo they rarely use; the next ticket for it adds it back.
 
 ## Finish
 
