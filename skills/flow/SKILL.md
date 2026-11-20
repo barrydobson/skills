@@ -33,6 +33,8 @@ Start a worker by piping its role prompt and its task file into `worker-start`:
 cat ${CLAUDE_SKILL_DIR}/prompts/<role>.md <dir>/<role>.md | orca orchestration worker-start --spec-file - --task-title "<role> <key>" --worktree current --keep-open --agent <agent> [--model <id>]
 ```
 
+For the `spec` role, put `${CLAUDE_PLUGIN_ROOT}/shared/ready-for-agent.md` between the prompt and the task file, so the worker gets the readiness rules.
+
 All workers share this workspace, one at a time. `--keep-open` keeps the builder and reviewer sessions alive between review rounds. Reach a worker with `orca orchestration send --to dispatch:<dispatch id> --subject "<subject>" --body-file <dir>/<file>.md`. Orca records every dispatch: `orca orchestration worker-list --run <run id>` finds them again.
 
 Whenever you stop for the user, first record the reason where Orca's sidebar shows it: `orca worktree set --worktree current --comment "flow: <reason in a few words>"`.
@@ -44,8 +46,8 @@ Whenever you stop for the user, first record the reason where Orca's sidebar sho
    Then check for an earlier run of this ticket: a Run in `orca orchestration run-list --json` whose objective starts with `<key>:`. If there is one, `orca orchestration run-use --id <run id>` and read `task-list --full` and `worker-list --run <run id>`. Carry on from the first step that has not finished: a linked PR means step 5 is done, and the ticket in review means step 6 is.
 1. **Run.** Read the ticket with the tracker. Run `orca orchestration run-create --objective "<key>: <ticket title>"`. Then `orca worktree set --worktree current --workspace-status in-progress`, so Orca's sidebar and board show the run under In progress.
 2. **Spec.** Write the key in full form (`owner/repo#n` for GitHub) to `<dir>/spec.md` and start the `spec` worker with `--agent claude`. On its report:
-   - **Unfit**, or **fit** with a Fit, Plan or Decision that names a change in another repo: write the spec's Goal and Fit to `<dir>/comment.md` under the heading `## flow: not ready for agent`, post it on the ticket and move the ticket to needs-info, so the next run does not pick it up again. Then give the user the reasons and stop.
-   - **Fit:** write the whole spec to `<dir>/build.md` as the build task.
+   - **needs-info** or **ready-for-human**, or **ready-for-agent** with a Readiness, Plan or Decision that names a change in another repo (treat that as needs-info): write the spec's Goal and Readiness to `<dir>/comment.md` under the heading `## flow: not ready for agent`, post it on the ticket and move the ticket to that state, so the next run does not pick it up again. Then give the user the reasons and stop.
+   - **ready-for-agent:** write the whole spec to `<dir>/build.md` as the build task.
 3. **Build.** Mark the ticket started with the tracker. Pick the model from the spec:
    - `claude-haiku-5-5`: mechanical or documentation-only changes;
    - `claude-opus-5-5`: large changes, several components, or tricky logic (concurrency, auth, data migration);
