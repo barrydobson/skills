@@ -39,7 +39,7 @@ For the `spec` role, put `${CLAUDE_PLUGIN_ROOT}/shared/ready-for-agent.md` betwe
 
 All workers share this workspace, one at a time. `--keep-open` keeps the builder and reviewer sessions alive between review rounds. Reach a worker with `orca orchestration send --to dispatch:<dispatch id> --subject "<subject>" --body-file <dir>/<file>.md`. Orca records every dispatch: `orca orchestration worker-list --run <run id>` finds them again.
 
-Whenever you stop for the user, first record the reason where Orca's sidebar shows it: `orca worktree set --worktree current --comment "flow: <reason in a few words>"`.
+Whenever you stop for the user, first move the workspace to the board's Needs me column (Orca gave it the id `status-5`, and the UI cannot change it), mark it unread and record the reason: `orca worktree set --worktree current --workspace-status status-5 --unread --comment "flow: <reason in a few words>"`. When the user answers and you carry on, move it back: `orca worktree set --worktree current --workspace-status in-progress --comment ""`. Waiting on a merge is not such a stop: after step 6, and when F2 finds the PR not merged, the workspace stays in In review.
 
 ## Steps
 
