@@ -33,6 +33,8 @@ Start a worker by piping its role prompt and its task file into `worker-start`:
 cat ${CLAUDE_SKILL_DIR}/prompts/<role>.md <dir>/<role>.md | orca orchestration worker-start --spec-file - --task-title "<role> <key>" --worktree current --keep-open --agent <agent> [--model <id>]
 ```
 
+Orca's sidebar lists each worker by its terminal tab title, which starts as `worker-task_<id>`. Right after each start, take the worker's terminal handle from the receipt, or from `orca orchestration worker-show --dispatch <id> --json`, and name the tab after its job: `orca terminal rename --terminal <handle> --title "<key> <role>: <purpose in a few words>"`, for example `PI-2830 build: add the retry flag`. In step 1, name your own tab the same way: `orca terminal rename --title "<key> flow: coordinator"`.
+
 For the `spec` role, put `${CLAUDE_PLUGIN_ROOT}/shared/ready-for-agent.md` between the prompt and the task file, so the worker gets the readiness rules.
 
 All workers share this workspace, one at a time. `--keep-open` keeps the builder and reviewer sessions alive between review rounds. Reach a worker with `orca orchestration send --to dispatch:<dispatch id> --subject "<subject>" --body-file <dir>/<file>.md`. Orca records every dispatch: `orca orchestration worker-list --run <run id>` finds them again.
