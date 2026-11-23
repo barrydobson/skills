@@ -1,11 +1,11 @@
 ---
-name: investigate
+name: refine
 description: Works one ticket that is not ready for an agent through its open questions with the human, then posts an agent brief and moves it to ready-for-agent, or splits, parks or closes it.
 disable-model-invocation: true
 argument-hint: "[ticket-key]"
 ---
 
-# investigate
+# refine
 
 Resolve every open question on one ticket, with the human, in its own repo. The rules for when a ticket is ready-for-agent, needs-info or ready-for-human are in `${CLAUDE_PLUGIN_ROOT}/shared/ready-for-agent.md`; read them first. This is a conversation: recommend, but the human decides. Change no code: read code, and write only to the tracker.
 
