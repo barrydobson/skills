@@ -47,9 +47,9 @@ Whenever you stop for the user, first move the workspace to the board's Needs me
 
    Then check for an earlier run of this ticket: a Run in `orca orchestration run-list --json` whose objective starts with `<key>:`. If there is one, `orca orchestration run-use --id <run id>` and read `task-list --full` and `worker-list --run <run id>`. Carry on from the first step that has not finished: a linked PR means step 5 is done, and the ticket in review means step 6 is.
 1. **Run.** Read the ticket with the tracker. Run `orca orchestration run-create --objective "<key>: <ticket title>"`. Then `orca worktree set --worktree current --workspace-status in-progress`, so Orca's sidebar and board show the run under In progress.
-2. **Spec.** Write the key in full form (`owner/repo#n` for GitHub) to `<dir>/spec.md` and start the `spec` worker with `--agent claude`. On its report:
+2. **Spec.** Write two lines to `<dir>/spec.md`: `Key: <key>` in full form (`owner/repo#n` for GitHub) and `Spec file: <dir>/build.md`. Start the `spec` worker with `--agent claude`. It writes the whole spec to `<dir>/build.md` and reports only its first line. Read `<dir>/build.md`; if it is missing or its first line does not match the report, send the worker the problem and wait. Then:
    - **needs-info** or **ready-for-human**, or **ready-for-agent** with a Readiness, Plan or Decision that names a change in another repo (treat that as needs-info): write the spec's Goal and Readiness to `<dir>/comment.md` under the heading `## flow: not ready for agent`, post it on the ticket and move the ticket to that state, so the next run does not pick it up again. Then give the user the reasons and stop.
-   - **ready-for-agent:** write the whole spec to `<dir>/build.md` as the build task.
+   - **ready-for-agent:** `<dir>/build.md` is the build task as it stands.
 3. **Build.** Mark the ticket started with the tracker. Pick the model from the spec:
    - `claude-haiku-5-5`: mechanical or documentation-only changes;
    - `claude-opus-5-5`: large changes, several components, or tricky logic (concurrency, auth, data migration);
